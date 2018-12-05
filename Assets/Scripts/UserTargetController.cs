@@ -52,20 +52,21 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 	public void BuildTarget()
 	{
 		// Every time new dataset for single target
-		if(objectTracker != null)
-		{
-			dataSet = objectTracker.CreateDataSet();
-		}
-		else
-		{
-			log.text = "ObjectTracker is NULL";
-			log.color = Color.red;
-		}
 		if(udtbFrameQuality == ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH)
 		{
+			if(objectTracker != null)
+			{
+				dataSet = objectTracker.CreateDataSet();
+			}
+			else
+			{
+				log.text = "ObjectTracker is NULL";
+				log.color = Color.red;
+			}
 			udtbBehaviour.BuildNewTarget("UserTarget", targetBehaviour.GetSize().x);
         	log.text = "Target built";
 			log.color = Color.green;
+			UIController.startButton.interactable = true;
 		}
 		else
 		{
