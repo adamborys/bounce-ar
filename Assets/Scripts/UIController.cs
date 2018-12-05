@@ -8,7 +8,6 @@ public class UIController : MonoBehaviour
 {
     private Slider horizontalSlider, verticalSlider;
     private Button calibrateButton, buildButton;
-    private Text testLog;
     Quaternion calibration;
     Vector3 acceleration
     {
@@ -29,8 +28,6 @@ public class UIController : MonoBehaviour
         calibrateButton.onClick.AddListener(delegate { CalibrateClick(); });
         buildButton = GameObject.Find("BuildButton").GetComponent<Button>();
         buildButton.onClick.AddListener(delegate { BuildClick(); });
-
-        testLog = GameObject.Find("TestLog").GetComponent<Text>();
     }
 
     private void CalibrateClick()
@@ -42,16 +39,13 @@ public class UIController : MonoBehaviour
     }
     private void BuildClick()
     {
-        throw new NotImplementedException();
+        UserTargetController itc = GameObject.Find("UserTarget").GetComponent<UserTargetController>();
+		itc.BuildTarget();
     }
 
-    // Update is called once per frame
     void Update()
     {
         horizontalSlider.value = (float)(acceleration.x / 2 + 0.5);
         verticalSlider.value = (float)(acceleration.y / 2 + 0.5);
-
-        testLog.text = acceleration.x.ToString("0.00");
-        testLog.text = acceleration.y.ToString("0.00");
     }
 }
