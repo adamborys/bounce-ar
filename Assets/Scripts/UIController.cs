@@ -55,7 +55,8 @@ public class UIController : MonoBehaviour
         horizontalSlider.value = (float)(acceleration.x / 2 + 0.5);
         verticalSlider.value = (float)(acceleration.y / 2 + 0.5);
 		if(0.45 <= horizontalSlider.value && horizontalSlider.value <= 0.55 &&
-			0.45 <= verticalSlider.value && verticalSlider.value <= 0.55)
+			0.45 <= verticalSlider.value && verticalSlider.value <= 0.55 && 
+			!UserGuideController.IsActive)
 		{
 			buildButton.interactable = true;
 		}

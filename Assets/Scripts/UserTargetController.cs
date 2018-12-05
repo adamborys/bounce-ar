@@ -62,6 +62,7 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 			{
 				log.text = "ObjectTracker is NULL";
 				log.color = Color.red;
+				return;
 			}
 			udtbBehaviour.BuildNewTarget("UserTarget", targetBehaviour.GetSize().x);
         	log.text = "Target built";
