@@ -29,12 +29,40 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 			log.color = Color.red;
 		}
 	}
+	// On Vuforia initialization
+    public void OnInitialized()
+    {
+        objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+    }
+
+	// Image quality control
+    public void OnFrameQualityChanged(ImageTargetBuilder.FrameQuality frameQuality)
+    {
+        udtbFrameQuality = frameQuality;
+    }
+
+	// Create trackable and activate dataset on new target
+    public void OnNewTrackableSource(TrackableSource trackableSource)
+    {
+        dataSet.CreateTrackable(trackableSource, targetBehaviour.gameObject);
+		objectTracker.ActivateDataSet(dataSet);
+		udtbBehaviour.StartScanning();
+    }
 
 	public void BuildTarget()
 	{
+		// Every time new dataset for single target
+		if(objectTracker != null)
+		{
+			dataSet = objectTracker.CreateDataSet();
+		}
+		else
+		{
+			log.text = "ObjectTracker is NULL";
+			log.color = Color.red;
+		}
 		if(udtbFrameQuality == ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH)
 		{
-			//Nie można zbudować nowego - wciąż wykorzystuje stary target!
 			udtbBehaviour.BuildNewTarget("UserTarget", targetBehaviour.GetSize().x);
         	log.text = "Target built";
 			log.color = Color.green;
@@ -45,32 +73,4 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 			log.color = Color.red;
 		}
 	}
-
-    public void OnInitialized()
-    {
-		//Creating dataset
-        objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-		if(objectTracker != null)
-		{
-			dataSet = objectTracker.CreateDataSet();
-		}
-		else
-		{
-			log.text = "ObjectTracker is NULL";
-			log.color = Color.red;
-		}
-    }
-
-	// Image quality control
-    public void OnFrameQualityChanged(ImageTargetBuilder.FrameQuality frameQuality)
-    {
-        udtbFrameQuality = frameQuality;
-    }
-
-    public void OnNewTrackableSource(TrackableSource trackableSource)
-    {
-        dataSet.CreateTrackable(trackableSource, targetBehaviour.gameObject);
-		objectTracker.ActivateDataSet(dataSet);
-		udtbBehaviour.StartScanning();
-    }
 }
