@@ -52,7 +52,7 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 	public void BuildTarget()
 	{
 		// Every time new dataset for single target
-		if(udtbFrameQuality == ImageTargetBuilder.FrameQuality.FRAME_QUALITY_LOW)
+		if(udtbFrameQuality == ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH)
 		{
 			if(objectTracker != null)
 			{

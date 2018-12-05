@@ -79,6 +79,7 @@ public class UIController : MonoBehaviour
 		Scene gameScene = SceneManager.GetSceneByName("Game");
         SceneManager.MoveGameObjectToScene(GameObject.Find("ARCamera"), gameScene);
         SceneManager.MoveGameObjectToScene(GameObject.Find("UserTarget"), gameScene);
+        SceneManager.MoveGameObjectToScene(GameObject.Find("Light"), gameScene);
         SceneManager.UnloadSceneAsync(currentScene);
     }
 }
