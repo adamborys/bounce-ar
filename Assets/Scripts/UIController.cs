@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
+    public static Button calibrateButton, buildButton;
     private Slider horizontalSlider, verticalSlider;
-    private Button calibrateButton, buildButton;
     Quaternion calibration;
     Vector3 acceleration
     {
