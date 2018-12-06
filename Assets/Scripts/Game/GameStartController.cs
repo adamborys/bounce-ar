@@ -25,7 +25,7 @@ public class GameStartController : MonoBehaviour
         else
         {
             debugLight.SetActive(false);
-            debugCamera.SetActive(true);
+            debugCamera.SetActive(false);
 
             Destroy(GameObject.Find("TestCube"));
             userTarget = GameObject.Find("UserTarget");
