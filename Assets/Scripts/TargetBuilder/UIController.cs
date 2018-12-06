@@ -22,14 +22,14 @@ public class UIController : MonoBehaviour
     void Start()
     {
         Screen.orientation = ScreenOrientation.LandscapeLeft;
-        horizontalSlider = GameObject.Find("HorizontalSlider").GetComponent<Slider>();
-        verticalSlider = GameObject.Find("VerticalSlider").GetComponent<Slider>();
+        horizontalSlider = transform.GetChild(0).GetComponent<Slider>();
+        verticalSlider = transform.GetChild(1).GetComponent<Slider>();
 
-        calibrateButton = GameObject.Find("CalibrateButton").GetComponent<Button>();
+        calibrateButton = transform.GetChild(2).GetComponent<Button>();
         calibrateButton.onClick.AddListener(delegate { CalibrateClick(); });
-        buildButton = GameObject.Find("BuildButton").GetComponent<Button>();
+        buildButton = transform.GetChild(3).GetComponent<Button>();
         buildButton.onClick.AddListener(delegate { BuildClick(); });
-        startButton = GameObject.Find("StartButton").GetComponent<Button>();
+        startButton = transform.GetChild(4).GetComponent<Button>();
         startButton.onClick.AddListener(delegate { StartClick(); });
     }
 
