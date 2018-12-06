@@ -52,17 +52,13 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 
 	public void BuildTarget()
 	{
-		ImageTargetBuilder.FrameQuality quality;
+		ImageTargetBuilder.FrameQuality quality = ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH;;
 		if(IsPCDebugged)
 		{
-			quality = ImageTargetBuilder.FrameQuality.FRAME_QUALITY_LOW;
-		}
-		else
-		{
-			quality = ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH;
+			quality = ImageTargetBuilder.FrameQuality.FRAME_QUALITY_MEDIUM;
 		}
 		// Every time new dataset for single target
-		if(udtbFrameQuality == ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH)
+		if(udtbFrameQuality == quality)
 		{
 			if(objectTracker != null)
 			{
