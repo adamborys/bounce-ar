@@ -9,7 +9,8 @@ public class GameStartController : MonoBehaviour
 {
     public static bool IsReady;
     public bool IsGameOnlyDebugged;
-    GameObject debugLight, debugCamera, userTarget;
+    public static GameObject debugCamera;
+    GameObject debugLight, userTarget;
     Slider scaleSlider;
     Button readyButton;
 	Vector3 initialScale;

@@ -11,31 +11,34 @@ public class BallController : MonoBehaviour {
 	void Start()
 	{
 		ball = GetComponent<Rigidbody>();
-		velocity = ball.velocity = new Vector3(1,0,1) * speed;
+		velocity = ball.velocity = new Vector3(0,0,-1) * speed;
 
 		hitWall = GameObject.Find("HitWall");
 		playerWall = GameObject.Find("PlayerWall");
 		leftWall = GameObject.Find("LeftWall");
 		rightWall = GameObject.Find("RightWall");
 	}
-
+	
     void OnCollisionEnter (Collision col)
     {
 		if(col.gameObject == hitWall)
 		{
 			velocity = ball.velocity = Vector3.Reflect(velocity, -Vector3.forward);
+			Debug.Log("HitWall");
 		}
 		if(col.gameObject == playerWall)
 		{
-			velocity = ball.velocity = Vector3.zero;
+			ball.isKinematic = true;
 		}
 		if(col.gameObject == leftWall)
 		{
 			velocity = ball.velocity = Vector3.Reflect(velocity, Vector3.right);
+			Debug.Log("LeftWall");
 		}
 		if(col.gameObject == rightWall)
 		{
 			velocity = ball.velocity = Vector3.Reflect(velocity, -Vector3.right);
+			Debug.Log("RightWall");
 		}
     }
 }
