@@ -18,27 +18,21 @@ public class BallController : MonoBehaviour {
 		leftWall = GameObject.Find("LeftWall");
 		rightWall = GameObject.Find("RightWall");
 	}
-	
+
     void OnCollisionEnter (Collision col)
     {
-		if(col.gameObject == hitWall)
-		{
-			velocity = ball.velocity = Vector3.Reflect(velocity, -Vector3.forward);
-			Debug.Log("HitWall");
-		}
 		if(col.gameObject == playerWall)
 		{
 			ball.isKinematic = true;
 		}
-		if(col.gameObject == leftWall)
+		else
 		{
-			velocity = ball.velocity = Vector3.Reflect(velocity, Vector3.right);
-			Debug.Log("LeftWall");
-		}
-		if(col.gameObject == rightWall)
-		{
-			velocity = ball.velocity = Vector3.Reflect(velocity, -Vector3.right);
-			Debug.Log("RightWall");
+			velocity = ball.velocity = Vector3.Reflect(velocity, col.contacts[0].normal);
 		}
     }
+
+	void OnCollisionExit (Collision col)
+	{
+		
+	}
 }

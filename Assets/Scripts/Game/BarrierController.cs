@@ -20,7 +20,8 @@ public class BarrierController : MonoBehaviour
             Ray ray = GameStartController.debugCamera
 						.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+            LayerMask mask = LayerMask.GetMask("Default");
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
             {
                 if (isNewBarrier)
                     positions[0] = new Vector3(hit.point.x, 0.5f, hit.point.z);
@@ -32,9 +33,10 @@ public class BarrierController : MonoBehaviour
 
 					Destroy(barrier);
 					barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
+					barrier.name = "Barrier";
 					barrier.transform.position = midpoint;
 					barrier.transform.LookAt(positions[1]);
-					barrier.transform.localScale = new Vector3(0.02f, 1, 2);
+					barrier.transform.localScale = new Vector3(0.02f, 0.5f, 3);
 				}
                 isNewBarrier = !isNewBarrier;
             }
