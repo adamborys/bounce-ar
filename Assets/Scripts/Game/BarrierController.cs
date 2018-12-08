@@ -21,6 +21,7 @@ public class BarrierController : MonoBehaviour
 						.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit;
             LayerMask mask = LayerMask.GetMask("Default");
+            // Ignoring other layers than "Default"
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
             {
                 if (isNewBarrier)
