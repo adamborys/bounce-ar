@@ -6,6 +6,7 @@ public class BarrierController : MonoBehaviour
 {
     bool isNewBarrier = true;
     Vector3[] positions;
+	GameObject barrier;
 
     void Start()
     {
@@ -22,15 +23,20 @@ public class BarrierController : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 if (isNewBarrier)
-                    positions[0] = new Vector3(hit.point.x, 0.005f, hit.point.z);
+                    positions[0] = new Vector3(hit.point.x, 0.5f, hit.point.z);
 				else
-					positions[1] = new Vector3(hit.point.x, 0.005f, hit.point.z);
-                isNewBarrier = !isNewBarrier;
-				if(isNewBarrier)
 				{
-					Debug.Log(positions[0]);
-					Debug.Log(positions[1]);
+					positions[1] = new Vector3(hit.point.x, 0.5f, hit.point.z);
+				
+					Vector3 midpoint = (positions[1] - positions[0]) / 2 + positions[0];
+
+					Destroy(barrier);
+					barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
+					barrier.transform.position = midpoint;
+					barrier.transform.LookAt(positions[1]);
+					barrier.transform.localScale = new Vector3(0.02f, 1, 2);
 				}
+                isNewBarrier = !isNewBarrier;
             }
         }
     }
