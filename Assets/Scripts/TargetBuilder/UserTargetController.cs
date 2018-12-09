@@ -6,7 +6,6 @@ using Vuforia;
 
 public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandler
 {
-	public bool IsPCDebugged;
 	ImageTargetBehaviour targetBehaviour;
 	UserDefinedTargetBuildingBehaviour udtbBehaviour;
 	ImageTargetBuilder.FrameQuality udtbFrameQuality;
@@ -52,13 +51,8 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 
 	public void BuildTarget()
 	{
-		ImageTargetBuilder.FrameQuality quality = ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH;;
-		if(IsPCDebugged)
-		{
-			quality = ImageTargetBuilder.FrameQuality.FRAME_QUALITY_MEDIUM;
-		}
 		// Every time new dataset for single target
-		if(udtbFrameQuality == quality)
+		if(udtbFrameQuality == ImageTargetBuilder.FrameQuality.FRAME_QUALITY_MEDIUM)
 		{
 			if(objectTracker != null)
 			{

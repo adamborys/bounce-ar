@@ -80,6 +80,11 @@ public class UIController : MonoBehaviour
         SceneManager.MoveGameObjectToScene(GameObject.Find("ARCamera"), gameScene);
         SceneManager.MoveGameObjectToScene(GameObject.Find("UserTarget"), gameScene);
         SceneManager.MoveGameObjectToScene(GameObject.Find("Light"), gameScene);
+        GameObject[] gameObjects = gameScene.GetRootGameObjects();
+        // setting Floor as Light parent
+        gameObjects[3].transform.SetParent(gameObjects[0].transform, false);
+        // setting UserTarget as Floor parent
+        gameObjects[0].transform.SetParent(gameObjects[gameObjects.Length - 1].transform, false);
         SceneManager.UnloadSceneAsync(currentScene);
     }
 }

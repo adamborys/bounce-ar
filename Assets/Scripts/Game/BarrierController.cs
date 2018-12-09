@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class BarrierController : MonoBehaviour
 {
+	public static GameObject Barrier;
     bool isNewBarrier = true;
     Vector3[] positions;
-	GameObject barrier;
 
     void Start()
     {
@@ -17,27 +17,30 @@ public class BarrierController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = GameStartController.debugCamera
-						.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit;
             LayerMask mask = LayerMask.GetMask("Default");
             // Ignoring other layers than "Default"
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
             {
                 if (isNewBarrier)
-                    positions[0] = new Vector3(hit.point.x, 0.5f, hit.point.z);
+                {
+					Destroy(Barrier);
+                    positions[0] = transform.InverseTransformPoint(hit.point);
+                }
 				else
 				{
-					positions[1] = new Vector3(hit.point.x, 0.5f, hit.point.z);
-				
+					positions[1] = transform.InverseTransformPoint(hit.point);
 					Vector3 midpoint = (positions[1] - positions[0]) / 2 + positions[0];
+                    midpoint.y = positions[1].y = 0.0035f;
 
-					Destroy(barrier);
-					barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
-					barrier.name = "Barrier";
-					barrier.transform.position = midpoint;
-					barrier.transform.LookAt(positions[1]);
-					barrier.transform.localScale = new Vector3(0.02f, 0.5f, 3);
+					Barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    Barrier.transform.SetParent(transform, false);
+					Barrier.name = "Barrier";
+					Barrier.transform.localPosition = midpoint;
+                    Barrier.transform.localScale = 
+                        new Vector3(0.002f, 0.05f, 0.3f) / transform.localScale.x;
+					Barrier.transform.LookAt(transform.TransformPoint(positions[1]), transform.up);
 				}
                 isNewBarrier = !isNewBarrier;
             }
