@@ -86,5 +86,9 @@ public class UIController : MonoBehaviour
         // setting UserTarget as Floor parent
         gameObjects[0].transform.SetParent(gameObjects[gameObjects.Length - 1].transform, false);
         SceneManager.UnloadSceneAsync(currentScene);
+
+        // Wystrzel piłkę dopiero po wczytaniu sceny
+        BallController ballController = gameObjects[0].transform.GetChild(0).GetComponent<BallController>();
+        ballController.LaunchBall();
     }
 }

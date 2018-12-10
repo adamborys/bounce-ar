@@ -52,7 +52,8 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 	public void BuildTarget()
 	{
 		// Every time new dataset for single target
-		if(udtbFrameQuality == ImageTargetBuilder.FrameQuality.FRAME_QUALITY_MEDIUM)
+		// TO DO dialog jeśli użytkownik chce zbudować target w jakości medium na słabym aparacie
+		if(udtbFrameQuality == ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH)
 		{
 			if(objectTracker != null)
 			{

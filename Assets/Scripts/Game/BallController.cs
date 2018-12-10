@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class BallController : MonoBehaviour
 {
-    float speed = 0.01f;
+    public float speed = 0.1f;
+    bool isLaunched;
     Rigidbody ball;
 	SphereCollider ballCollider;
 	Vector3 direction;
@@ -15,7 +16,6 @@ public class BallController : MonoBehaviour
     void Start()
     {
         ball = GetComponent<Rigidbody>();
-		direction = -Vector3.forward;
 
         hitWall = GameObject.Find("HitWall");
         playerWall = GameObject.Find("PlayerWall");
@@ -23,14 +23,34 @@ public class BallController : MonoBehaviour
         rightWall = GameObject.Find("RightWall");
 
 		mask = LayerMask.GetMask("Walls");
+        direction = -Vector3.forward;
     }
 
     void FixedUpdate()
     {
-		ball.MovePosition(ball.position + transform.parent.TransformDirection(direction * speed));
+        if(isLaunched)
+        {
+            // Poruszanie na sztywno, bo ruch kamery odkształca ruch sterowany zmianą ball.velocity
+            transform.Translate(direction * speed);
+        }
+    }
+
+    public void LaunchBall()
+    {
+        StartCoroutine(launchBall());
     }
 
     private void OnCollisionEnter(Collision col)
     {
+        Debug.Log(direction);
+        Vector3 colliderNormal = transform.InverseTransformDirection(col.contacts[0].normal);
+        direction = Vector3.Reflect(direction, colliderNormal);
+        Debug.Log(direction);
+    }
+
+    private IEnumerator launchBall()
+    {
+        yield return new WaitForSeconds(3);
+        isLaunched = true;
     }
 }
