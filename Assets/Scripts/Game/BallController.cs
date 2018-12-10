@@ -15,9 +15,7 @@ public class BallController : MonoBehaviour
     void Start()
     {
         ball = GetComponent<Rigidbody>();
-        ballCollider = GetComponent<SphereCollider>();
-		ball.isKinematic = true;
-		direction = new Vector3(0, 0, -1);
+		direction = -Vector3.forward;
 
         hitWall = GameObject.Find("HitWall");
         playerWall = GameObject.Find("PlayerWall");
@@ -29,20 +27,10 @@ public class BallController : MonoBehaviour
 
     void FixedUpdate()
     {
-		transform.Translate(direction * speed);
+		ball.MovePosition(ball.position + transform.parent.TransformDirection(direction * speed));
     }
 
-    private void OnTriggerEnter(Collider hitCollider)
+    private void OnCollisionEnter(Collision col)
     {
-		// Raycast to figure out the normal of the trigger intersection
-		RaycastHit hitInfo = new RaycastHit();
-		Vector3 direction = hitCollider.bounds.center - ballCollider.bounds.center;
-		Debug.Log(direction.x);
-		Debug.Log(direction.y);
-		Debug.Log(direction.z);
-		Physics.Raycast(ballCollider.bounds.center, direction, out hitInfo, Mathf.Infinity, mask);
-		
-		// Now we can calculate the bounce direction
-		direction = Vector3.Reflect(direction, hitInfo.normal);
     }
 }
