@@ -68,7 +68,7 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 			udtbBehaviour.BuildNewTarget("UserTarget", targetBehaviour.GetSize().x);
         	log.text = "Target built";
 			log.color = Color.green;
-			UIController.startButton.interactable = true;
+			TargetBuilderUIController.startButton.interactable = true;
 		}
 		else
 		{

@@ -33,8 +33,8 @@ public class UserGuideController : MonoBehaviour
 		{
 			case 1:
 				gameObject.SetActive(false);
-				UIController.calibrateButton.interactable = true;
-				UIController.buildButton.interactable = true;
+				TargetBuilderUIController.calibrateButton.interactable = true;
+				TargetBuilderUIController.buildButton.interactable = true;
 				IsActive = false;
 				break;
 			case 2:
@@ -80,8 +80,8 @@ public class UserGuideController : MonoBehaviour
 				break;
 			case 4:
 				gameObject.SetActive(false);
-				UIController.calibrateButton.interactable = true;
-				UIController.buildButton.interactable = true;
+				TargetBuilderUIController.calibrateButton.interactable = true;
+				TargetBuilderUIController.buildButton.interactable = true;
 				IsActive = false;
 				break;
 		}

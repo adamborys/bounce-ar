@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class UIController : MonoBehaviour
+public class TargetBuilderUIController : MonoBehaviour
 {
     public static Button calibrateButton, buildButton, startButton;
     private Slider horizontalSlider, verticalSlider;
@@ -78,17 +78,14 @@ public class UIController : MonoBehaviour
         }
 		Scene gameScene = SceneManager.GetSceneByName("Game");
         SceneManager.MoveGameObjectToScene(GameObject.Find("ARCamera"), gameScene);
-        SceneManager.MoveGameObjectToScene(GameObject.Find("UserTarget"), gameScene);
-        SceneManager.MoveGameObjectToScene(GameObject.Find("Light"), gameScene);
-        GameObject[] gameObjects = gameScene.GetRootGameObjects();
-        // setting Floor as Light parent
-        gameObjects[3].transform.SetParent(gameObjects[0].transform, false);
-        // setting UserTarget as Floor parent
-        gameObjects[0].transform.SetParent(gameObjects[gameObjects.Length - 1].transform, false);
+        GameObject userTarget = GameObject.Find("UserTarget");
+        SceneManager.MoveGameObjectToScene(userTarget, gameScene);
+        GameObject arena = GameObject.Find("Arena");
+        arena.transform.SetParent(userTarget.transform, false);
         SceneManager.UnloadSceneAsync(currentScene);
 
         // Wystrzel piłkę dopiero po wczytaniu sceny
-        BallController ballController = gameObjects[0].transform.GetChild(0).GetComponent<BallController>();
+        BallController ballController = GameObject.Find("OpponentBall").GetComponent<BallController>();
         ballController.LaunchBall();
     }
 }
