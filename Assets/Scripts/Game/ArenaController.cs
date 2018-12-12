@@ -5,25 +5,28 @@ using UnityEngine;
 using UnityEngine.UI;
 using Vuforia;
 
-public class GameStartController : MonoBehaviour
+public class ArenaController : MonoBehaviour
 {
-    public static bool IsReady;
-    Slider scaleSlider;
-    Button readyButton;
+    public Slider scaleSlider;
+    public Button readyButton;
 	Vector3 initialScale;
     // Use this for initialization
     void Start()
     {
         Destroy(GameObject.Find("TestCube"));
 
-        scaleSlider = GameObject.Find("ScaleSlider").GetComponent<Slider>();
         scaleSlider.onValueChanged.AddListener(delegate { ScaleValueChanged(); });
-        scaleSlider.value = 0;
-        readyButton = GameObject.Find("ReadyButton").GetComponent<Button>();
         readyButton.onClick.AddListener(delegate { ReadyClick(); });
 
         initialScale = new Vector3(10f, 10f, 10f);
+        scaleSlider.value = 0;
         transform.localScale = initialScale;
+    }
+
+    void Update()
+    {
+        transform.position = UserTargetController.UserTargetTransform.position;
+        transform.rotation = UserTargetController.UserTargetTransform.rotation;
     }
 
     private void ScaleValueChanged()
@@ -34,6 +37,8 @@ public class GameStartController : MonoBehaviour
 
     private void ReadyClick()
     {
-        throw new NotImplementedException();
+        transform.GetChild(0).gameObject.GetComponent<BallController>().LaunchBall();
+        Destroy(gameObject.scene.GetRootGameObjects()[1]);
+
     }
 }

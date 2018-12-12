@@ -57,7 +57,7 @@ public class TargetBuilderUIController : MonoBehaviour
         verticalSlider.value = (float)(acceleration.y / 2 + 0.5);
         if (0.45 <= horizontalSlider.value && horizontalSlider.value <= 0.55 &&
             0.45 <= verticalSlider.value && verticalSlider.value <= 0.55 &&
-            !UserGuideController.IsActive)
+            !UserGuideUIController.IsActive)
         {
             buildButton.interactable = true;
         }
@@ -69,23 +69,12 @@ public class TargetBuilderUIController : MonoBehaviour
 
     private IEnumerator loadGameSceneAsync()
     {
-        Scene currentScene = SceneManager.GetActiveScene();
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Game", LoadSceneMode.Additive);
 
-        while (!asyncLoad.isDone)
+        while(!asyncLoad.isDone)
         {
             yield return null;
         }
-		Scene gameScene = SceneManager.GetSceneByName("Game");
-        SceneManager.MoveGameObjectToScene(GameObject.Find("ARCamera"), gameScene);
-        GameObject userTarget = GameObject.Find("UserTarget");
-        SceneManager.MoveGameObjectToScene(userTarget, gameScene);
-        GameObject arena = GameObject.Find("Arena");
-        arena.transform.SetParent(userTarget.transform, false);
-        SceneManager.UnloadSceneAsync(currentScene);
-
-        // Wystrzel piłkę dopiero po wczytaniu sceny
-        BallController ballController = GameObject.Find("OpponentBall").GetComponent<BallController>();
-        ballController.LaunchBall();
+        Destroy(gameObject); // Destroy TargetBuilder UI
     }
 }

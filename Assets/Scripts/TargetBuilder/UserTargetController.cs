@@ -6,6 +6,7 @@ using Vuforia;
 
 public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandler
 {
+	public static Transform UserTargetTransform;
 	ImageTargetBehaviour targetBehaviour;
 	UserDefinedTargetBuildingBehaviour udtbBehaviour;
 	ImageTargetBuilder.FrameQuality udtbFrameQuality;
@@ -15,6 +16,7 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 	Text log;
     void Start () 
 	{
+		UserTargetTransform = transform;
 		targetBehaviour = GetComponent<ImageTargetBehaviour>();
 		log = GameObject.Find("Log").GetComponent<Text>();
 
@@ -53,7 +55,10 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 	{
 		// Every time new dataset for single target
 		// TO DO dialog jeśli użytkownik chce zbudować target w jakości medium na słabym aparacie
-		if(udtbFrameQuality == ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH)
+		ImageTargetBuilder.FrameQuality frameQuality = ImageTargetBuilder.FrameQuality.FRAME_QUALITY_MEDIUM;
+		if(Application.platform == RuntimePlatform.Android)
+			frameQuality = ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH;
+		if(udtbFrameQuality == frameQuality)
 		{
 			if(objectTracker != null)
 			{

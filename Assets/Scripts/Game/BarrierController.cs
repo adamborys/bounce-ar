@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BarrierController : MonoBehaviour
 {
@@ -8,14 +9,25 @@ public class BarrierController : MonoBehaviour
     bool isNewBarrier = true;
     Vector3[] positions;
 
+
     void Start()
     {
         positions = new Vector3[2];
+
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        int pointerID;
+        if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+            pointerID = Input.GetTouch(0).fingerId;
+        else if(Application.platform == RuntimePlatform.WindowsEditor)
+            pointerID = -1;
+        else
+            return;
+
+        if (Input.GetMouseButtonDown(0) && // Ignoring UI touch
+        !EventSystem.current.IsPointerOverGameObject(pointerID))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit;

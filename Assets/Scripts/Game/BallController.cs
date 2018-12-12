@@ -21,8 +21,6 @@ public class BallController : MonoBehaviour
         playerWall = GameObject.Find("PlayerWall");
         leftWall = GameObject.Find("LeftWall");
         rightWall = GameObject.Find("RightWall");
-
-		mask = LayerMask.GetMask("Walls");
         direction = -Vector3.forward;
     }
 
@@ -37,7 +35,7 @@ public class BallController : MonoBehaviour
 
     public void LaunchBall()
     {
-        StartCoroutine(launchBall());
+        isLaunched = true;
     }
 
     private void OnCollisionEnter(Collision col)
@@ -46,11 +44,5 @@ public class BallController : MonoBehaviour
         Vector3 colliderNormal = transform.InverseTransformDirection(col.contacts[0].normal);
         direction = Vector3.Reflect(direction, colliderNormal);
         Debug.Log(direction);
-    }
-
-    private IEnumerator launchBall()
-    {
-        yield return new WaitForSeconds(3);
-        isLaunched = true;
     }
 }
