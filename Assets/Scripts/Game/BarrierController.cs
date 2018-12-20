@@ -43,15 +43,16 @@ public class BarrierController : MonoBehaviour
 				else
 				{
 					positions[1] = transform.InverseTransformPoint(hit.point);
+                    positions[0].y = positions[1].y = 0.0035f;
 					Vector3 midpoint = (positions[1] - positions[0]) / 2 + positions[0];
-                    midpoint.y = positions[1].y = 0.0035f;
 
 					Barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     Barrier.transform.SetParent(transform, false);
 					Barrier.name = "Barrier";
 					Barrier.transform.localPosition = midpoint;
+                    float barrierLength = Vector3.Distance(positions[0], positions[1]);
                     Barrier.transform.localScale = 
-                        new Vector3(0.002f, 0.05f, 0.3f) / transform.localScale.x;
+                        new Vector3(0.0002f, 0.005f, Mathf.Clamp(barrierLength, 0.005f, 0.03f));
 					Barrier.transform.LookAt(transform.TransformPoint(positions[1]), transform.up);
 				}
                 isNewBarrier = !isNewBarrier;
