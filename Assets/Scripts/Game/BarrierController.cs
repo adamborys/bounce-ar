@@ -13,7 +13,6 @@ public class BarrierController : MonoBehaviour
     void Start()
     {
         positions = new Vector3[2];
-
     }
 
     void Update()
@@ -39,9 +38,11 @@ public class BarrierController : MonoBehaviour
                 {
 					Destroy(Barrier);
                     positions[0] = transform.InverseTransformPoint(hit.point);
+                    StartCoroutine(DelayedBarrierRefresh());
                 }
 				else
 				{
+                    StopCoroutine(DelayedBarrierRefresh());
 					positions[1] = transform.InverseTransformPoint(hit.point);
                     positions[0].y = positions[1].y = 0.0035f;
 					Vector3 midpoint = (positions[1] - positions[0]) / 2 + positions[0];
@@ -58,5 +59,12 @@ public class BarrierController : MonoBehaviour
                 isNewBarrier = !isNewBarrier;
             }
         }
+    }
+
+    private IEnumerator DelayedBarrierRefresh()
+    {
+        yield return new WaitForSeconds(1);
+        isNewBarrier = true;
+        positions = new Vector3[2];
     }
 }
