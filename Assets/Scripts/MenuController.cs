@@ -63,6 +63,18 @@ public class MenuController : MonoBehaviour
 
     private void PlayClick()
     {
+        if(networkProvider != null)
+        {
+            if(ServerToggle.isOn)
+            {
+                networkProvider.AddComponent<ServerController>().Shutdown();
+            }
+            else
+            {
+                networkProvider.AddComponent<ClientController>().Shutdown();
+            }
+            Destroy(networkProvider);
+        }
         if(int.TryParse(PortInput.text, out Port) && Port < 65536)
         {
             if(ServerToggle.isOn)
