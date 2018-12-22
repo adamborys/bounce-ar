@@ -10,6 +10,8 @@ using UnityEngine.Networking;
 
 public class MenuController : MonoBehaviour
 {
+    public string IPAddress;
+    public int Port;
     public Toggle ServerToggle, ClientToggle;
     public InputField IPInput, PortInput;
     public Text Log;
@@ -20,6 +22,7 @@ public class MenuController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Screen.orientation = ScreenOrientation.Portrait;
         ServerToggle.onValueChanged.AddListener(delegate {ServerSwitch();});
         ClientToggle.onValueChanged.AddListener(delegate {ClientSwitch();});
         PlayButton.onClick.AddListener(delegate {PlayClick();});
@@ -60,19 +63,21 @@ public class MenuController : MonoBehaviour
 
     private void PlayClick()
     {
-        int port;
-        if(int.TryParse(PortInput.text, out port) && port < 65536)
+        if(int.TryParse(PortInput.text, out Port) && Port < 65536)
         {
             if(ServerToggle.isOn)
             {
-                ServerInit(port);
+                ServerInit();
+                Log.text = "Server connection opened";
             }
             else
             {
                 Regex regex = new Regex(ipPattern);
                 if(regex.IsMatch(IPInput.text))
                 {
-                    Log.text = ClientInit(IPInput.text, port).ToString();
+                    IPAddress = IPInput.text;
+                    ClientInit();
+                    Log.text = "Client connection opened";
                 }
                 else
                 {
@@ -104,19 +109,17 @@ public class MenuController : MonoBehaviour
         return localIP;
     }
 
-    public void ServerInit(int port)
+    public void ServerInit()
     {
         networkProvider = new GameObject("Server");
         ServerController serverController = networkProvider.AddComponent<ServerController>();
-
-        serverController.Init(port);
+        serverController.ServerMenuController = this;
     }
 
-    public NetworkError ClientInit(string ip, int port)
+    public void ClientInit()
     {
         networkProvider = new GameObject("Client");
         ClientController clientController = networkProvider.AddComponent<ClientController>();
-
-        return clientController.Init(ip, port);
+        clientController.ClientMenuController = this;
     }
 }
