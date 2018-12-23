@@ -182,7 +182,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Play
+  m_Text: Connect
 --- !u!222 &6023995
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -309,12 +309,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b56feddf887be6f46b5e5a96f0c3cdf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IPAddress: 
+  Port: 0
   ServerToggle: {fileID: 327242692}
   ClientToggle: {fileID: 625683154}
   IPInput: {fileID: 1609560881}
   PortInput: {fileID: 1417145132}
   Log: {fileID: 1376683665}
-  PlayButton: {fileID: 541045969}
+  SubmitButton: {fileID: 541045969}
 --- !u!1 &261669985
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,7 +647,7 @@ GameObject:
   - component: {fileID: 541045970}
   - component: {fileID: 541045969}
   m_Layer: 5
-  m_Name: PlayButton
+  m_Name: SubmitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1216,7 +1218,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enter connetion data and click 'Play'
+  m_Text: Enter data and click to establish connection
 --- !u!222 &1376683666
 CanvasRenderer:
   m_ObjectHideFlags: 0

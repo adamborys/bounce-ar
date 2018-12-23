@@ -40,9 +40,11 @@ public class ServerController : MonoBehaviour
                 break;
             case NetworkEventType.ConnectEvent:
                 ServerMenuController.Log.text = "Client connected";
+                ServerMenuController.IsConnected = true;
                 break;
             case NetworkEventType.DisconnectEvent:
                 ServerMenuController.Log.text = "Client disconnected";
+                ServerMenuController.IsConnected = false;
                 break;
             case NetworkEventType.DataEvent:
                 ServerMenuController.Log.text = "Client data received";
@@ -51,7 +53,7 @@ public class ServerController : MonoBehaviour
                 ServerMenuController.Log.text = "Unexpected broadcast";
                 break;
             default:
-                ServerMenuController.Log.text = "Network Event system error";
+                ServerMenuController.Log.text = "Network Event System error";
                 break;
         }
     }

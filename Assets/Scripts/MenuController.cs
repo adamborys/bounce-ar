@@ -10,98 +10,123 @@ using UnityEngine.Networking;
 
 public class MenuController : MonoBehaviour
 {
+    public bool IsConnected
+    {
+        get
+        {
+            return isConnected;
+        }
+        set
+        {
+
+            if (!value)
+                if (ServerToggle.isOn)
+                    submitButtonLabel.text = "Start";
+                else
+                    submitButtonLabel.text = "Connect";
+            else
+                submitButtonLabel.text = "Play";
+
+            isConnected = value;
+        }
+    }
+    private bool isConnected;
     public string IPAddress;
     public int Port;
     public Toggle ServerToggle, ClientToggle;
     public InputField IPInput, PortInput;
     public Text Log;
-    public Button PlayButton;
+    public Button SubmitButton;
+    private Text submitButtonLabel;
     private GameObject networkProvider;
-    private string ipPattern = 
+    private string ipPattern =
         @"^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+
     // Start is called before the first frame update
     void Start()
     {
         Screen.orientation = ScreenOrientation.Portrait;
-        ServerToggle.onValueChanged.AddListener(delegate {ServerSwitch();});
-        ClientToggle.onValueChanged.AddListener(delegate {ClientSwitch();});
-        PlayButton.onClick.AddListener(delegate {PlayClick();});
+        ServerToggle.onValueChanged.AddListener(delegate { ServerSwitch(); });
+        ClientToggle.onValueChanged.AddListener(delegate { ClientSwitch(); });
+        SubmitButton.onClick.AddListener(delegate { PlayClick(); });
+        submitButtonLabel = SubmitButton.GetComponentInChildren<Text>();
     }
 
     #region UI listeners  
     private void ClientSwitch()
     {
-        if(ClientToggle.isOn)
+        ResetConnection();
+        if (ClientToggle.isOn)
         {
             ServerToggle.isOn = false;
             IPInput.text = "";
             IPInput.readOnly = false;
+            submitButtonLabel.text = "Connect";
         }
         else
         {
             ServerToggle.isOn = true;
             IPInput.text = GetLocalIPAddress();
             IPInput.readOnly = true;
+            submitButtonLabel.text = "Start";
         }
     }
 
     private void ServerSwitch()
     {
-        if(ServerToggle.isOn)
+        ResetConnection();
+        if (ServerToggle.isOn)
         {
             ClientToggle.isOn = false;
             IPInput.text = GetLocalIPAddress();
             IPInput.readOnly = true;
+            submitButtonLabel.text = "Start";
         }
         else
         {
             ClientToggle.isOn = true;
             IPInput.text = "";
             IPInput.readOnly = false;
+            submitButtonLabel.text = "Connect";
         }
     }
 
     private void PlayClick()
     {
-        if(networkProvider != null)
+        if (!isConnected)
         {
-            if(ServerToggle.isOn)
+            if (int.TryParse(PortInput.text, out Port) && Port < 65536)
             {
-                networkProvider.AddComponent<ServerController>().Shutdown();
-            }
-            else
-            {
-                networkProvider.AddComponent<ClientController>().Shutdown();
-            }
-            Destroy(networkProvider);
-        }
-        if(int.TryParse(PortInput.text, out Port) && Port < 65536)
-        {
-            if(ServerToggle.isOn)
-            {
-                ServerInit();
-                Log.text = "Server connection opened";
-            }
-            else
-            {
-                Regex regex = new Regex(ipPattern);
-                if(regex.IsMatch(IPInput.text))
+                if (ServerToggle.isOn)
                 {
-                    IPAddress = IPInput.text;
-                    ClientInit();
-                    Log.text = "Client connection opened";
+                    ServerInit();
+                    Log.text = "Awaiting client connection";
                 }
                 else
                 {
-                    Log.text = "Invalid IP address!";
+                    Regex regex = new Regex(ipPattern);
+                    if (regex.IsMatch(IPInput.text))
+                    {
+                        IPAddress = IPInput.text;
+                        ClientInit();
+                        Log.text = "Trying to connect with server";
+                    }
+                    else
+                    {
+                        Log.text = "Invalid IP address!";
+                    }
                 }
+            }
+            else
+            {
+                Log.text = "Invalid port number!";
             }
         }
         else
         {
-            Log.text = "Invalid port number!";
+            //DontDestroy
+            // Go to TargetBuilder
         }
-        //DontDestroy
     }
 
     #endregion
@@ -133,5 +158,22 @@ public class MenuController : MonoBehaviour
         networkProvider = new GameObject("Client");
         ClientController clientController = networkProvider.AddComponent<ClientController>();
         clientController.ClientMenuController = this;
+    }
+
+    public void ResetConnection()
+    {
+        if (networkProvider != null)
+        {
+            if (ServerToggle.isOn)
+            {
+                networkProvider.AddComponent<ServerController>().Shutdown();
+            }
+            else
+            {
+                networkProvider.AddComponent<ClientController>().Shutdown();
+            }
+            Destroy(networkProvider);
+        }
+        Log.text = "Enter data and click to establish connection";
     }
 }

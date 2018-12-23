@@ -38,9 +38,11 @@ public class ClientController : MonoBehaviour
                 break;
             case NetworkEventType.ConnectEvent:
                 ClientMenuController.Log.text = "Connected to server";
+                ClientMenuController.IsConnected = true;
                 break;
             case NetworkEventType.DisconnectEvent:
                 ClientMenuController.Log.text = "Disconnected from server";
+                ClientMenuController.IsConnected = false;
                 break;
             case NetworkEventType.DataEvent:
                 ClientMenuController.Log.text = "Server data received";
