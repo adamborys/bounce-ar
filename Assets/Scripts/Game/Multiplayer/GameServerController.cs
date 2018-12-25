@@ -19,7 +19,7 @@ public class GameServerController : MonoBehaviour
         serverBallTransform = transform.GetChild(0);
         clientBallTransform = transform.GetChild(1);
 
-        ClientController.ReceiveReadyMessage();
+        ServerController.ReceiveReadyMessage();
         StartCoroutine(DelayedBallsLaunch());
     }
     void Update()
