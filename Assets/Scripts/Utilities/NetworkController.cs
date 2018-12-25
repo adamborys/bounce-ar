@@ -7,9 +7,12 @@ using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
-public class MenuController : MonoBehaviour
+public class NetworkController : MonoBehaviour
 {
+    public static bool IsServer;
+    public static GameObject Provider;
     public bool IsConnected
     {
         get
@@ -38,7 +41,6 @@ public class MenuController : MonoBehaviour
     public Text Log;
     public Button SubmitButton;
     private Text submitButtonLabel;
-    private GameObject networkProvider;
     private string ipPattern =
         @"^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
 
@@ -53,21 +55,25 @@ public class MenuController : MonoBehaviour
     }
 
     #region UI listeners  
+
+    // Changing UI functionality and resetting connection due to modified server-client choice
     private void ClientSwitch()
     {
         ResetConnection();
         if (ClientToggle.isOn)
         {
             ServerToggle.isOn = false;
-            IPInput.text = "";
+            IsServer = false;
             IPInput.readOnly = false;
+            IPInput.text = "";
             submitButtonLabel.text = "Connect";
         }
         else
         {
             ServerToggle.isOn = true;
-            IPInput.text = GetLocalIPAddress();
+            IsServer = true;
             IPInput.readOnly = true;
+            IPInput.text = GetLocalIPAddress();
             submitButtonLabel.text = "Start";
         }
     }
@@ -78,15 +84,17 @@ public class MenuController : MonoBehaviour
         if (ServerToggle.isOn)
         {
             ClientToggle.isOn = false;
-            IPInput.text = GetLocalIPAddress();
             IPInput.readOnly = true;
+            IsServer = true;
+            IPInput.text = GetLocalIPAddress();
             submitButtonLabel.text = "Start";
         }
         else
         {
             ClientToggle.isOn = true;
-            IPInput.text = "";
             IPInput.readOnly = false;
+            IsServer = false;
+            IPInput.text = "";
             submitButtonLabel.text = "Connect";
         }
     }
@@ -124,13 +132,12 @@ public class MenuController : MonoBehaviour
         }
         else
         {
-            //DontDestroy
-            // Go to TargetBuilder
+            DontDestroyOnLoad(Provider);
+            SceneManager.LoadScene("TargetBuilder", LoadSceneMode.Single);
         }
     }
 
     #endregion
-
     private string GetLocalIPAddress()
     {
         IPHostEntry host;
@@ -148,31 +155,31 @@ public class MenuController : MonoBehaviour
 
     public void ServerInit()
     {
-        networkProvider = new GameObject("Server");
-        ServerController serverController = networkProvider.AddComponent<ServerController>();
-        serverController.ServerMenuController = this;
+        Provider = new GameObject("Server");
+        ServerController serverController = Provider.AddComponent<ServerController>();
+        serverController.ServerNetworkController = this;
     }
 
     public void ClientInit()
     {
-        networkProvider = new GameObject("Client");
-        ClientController clientController = networkProvider.AddComponent<ClientController>();
-        clientController.ClientMenuController = this;
+        Provider = new GameObject("Client");
+        ClientController clientController = Provider.AddComponent<ClientController>();
+        clientController.ClientNetworkController = this;
     }
 
     public void ResetConnection()
     {
-        if (networkProvider != null)
+        if (Provider != null)
         {
             if (ServerToggle.isOn)
             {
-                networkProvider.AddComponent<ServerController>().Shutdown();
+                Provider.AddComponent<ServerController>().Shutdown();
             }
             else
             {
-                networkProvider.AddComponent<ClientController>().Shutdown();
+                Provider.AddComponent<ClientController>().Shutdown();
             }
-            Destroy(networkProvider);
+            Destroy(Provider);
         }
         Log.text = "Enter data and click to establish connection";
     }

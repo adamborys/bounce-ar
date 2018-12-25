@@ -7,14 +7,13 @@ using Vuforia;
 
 public class ArenaController : MonoBehaviour
 {
+    public static bool IsReady;
     public Slider scaleSlider;
     public Button readyButton;
 	Vector3 initialScale;
     // Use this for initialization
     void Start()
     {
-        Destroy(GameObject.Find("TestCube"));
-
         scaleSlider.onValueChanged.AddListener(delegate { ScaleValueChanged(); });
         readyButton.onClick.AddListener(delegate { ReadyClick(); });
 
@@ -25,20 +24,22 @@ public class ArenaController : MonoBehaviour
 
     void Update()
     {
+        // Manipulating Arena transform due to non-parenting it to UserTarget
         transform.position = UserTargetController.UserTargetTransform.position;
         transform.rotation = UserTargetController.UserTargetTransform.rotation;
     }
 
     private void ScaleValueChanged()
     {
+        // Scaling before playing for personal convenience
 		float scale = Mathf.Pow(scaleSlider.value + 1f, 2);
         transform.localScale = scale * initialScale;
     }
 
     private void ReadyClick()
     {
-        transform.GetChild(0).gameObject.GetComponent<BallController>().LaunchBall();
+        // Destroying game start UI
         Destroy(gameObject.scene.GetRootGameObjects()[1]);
-
+        IsReady = true;
     }
 }

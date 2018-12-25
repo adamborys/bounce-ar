@@ -1,17 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using Messages;
 using UnityEngine;
 using UnityEngine.Networking;
 
 public class ClientController : MonoBehaviour
 {
-    public MenuController ClientMenuController;
-    private const int BYTE_SIZE = 1024;
-    private byte channelId;
-    private int hostId;
-    private byte error;
-    private bool isStarted;
-    private byte networkEventError;
+    public static byte[] receivedBuffer;
+    public NetworkController ClientNetworkController;
+    private int hostId, connectionId, channelId;
+    private bool isInitialized, isStarted;
+    private byte sendError, receiveError, connectionError;
 
     void Start()
     {
@@ -19,44 +20,61 @@ public class ClientController : MonoBehaviour
     }
     void Update()
     {
-        if(isStarted)
-            UpdateClientMessage();
+        if(isInitialized)
+            UpdateServerMessage();
     }
-    private void UpdateClientMessage()
+
+    public void SendClientMessage(ClientMessage message)
     {
-        int senderId, connectionId, channelId;
-        byte[] buffer = new byte[BYTE_SIZE];
+        byte[] buffer = new byte[MessageInfo.BYTE_SIZE];
+        
+        BinaryFormatter formatter = new BinaryFormatter();
+        MemoryStream stream = new MemoryStream(buffer);
+        formatter.Serialize(stream, message);
+
+        NetworkTransport.Send(hostId, connectionId, channelId, buffer, MessageInfo.BYTE_SIZE, out sendError);
+    }
+    private void UpdateServerMessage()
+    {
+        receivedBuffer = new byte[MessageInfo.BYTE_SIZE];
         int messageSize;
         
         NetworkEventType networkEventType = 
-            NetworkTransport.Receive(out senderId, out connectionId, out channelId,
-            buffer, BYTE_SIZE, out messageSize, out networkEventError);
+            NetworkTransport.Receive(out hostId, out connectionId, out channelId,
+            receivedBuffer, MessageInfo.BYTE_SIZE, out messageSize, out receiveError);
 
         switch (networkEventType)
         {
             case NetworkEventType.Nothing:
                 break;
             case NetworkEventType.ConnectEvent:
-                ClientMenuController.Log.text = "Connected to server";
-                ClientMenuController.IsConnected = true;
+                ClientNetworkController.Log.text = "Connected to server";
+                ClientNetworkController.IsConnected = true;
                 break;
             case NetworkEventType.DisconnectEvent:
-                ClientMenuController.Log.text = "Disconnected from server";
-                ClientMenuController.IsConnected = false;
+                ClientNetworkController.Log.text = "Disconnected from server";
+                ClientNetworkController.IsConnected = false;
                 break;
             case NetworkEventType.DataEvent:
-                ClientMenuController.Log.text = "Server data received";
+                if(isStarted)
+                {
+                    
+                }
+                else
+                {
+                    
+                }        
                 break;
             case NetworkEventType.BroadcastEvent:
-                ClientMenuController.Log.text = "Unexpected broadcast";
+                ClientNetworkController.Log.text = "Unexpected broadcast";
                 break;
             default:
-                ClientMenuController.Log.text = "Network Event system error";
+                ClientNetworkController.Log.text = "Network Event system error";
                 break;
         }
     }
 
-    public NetworkError Init()
+    public void Init()
     {
         NetworkTransport.Init();
         ConnectionConfig config = new ConnectionConfig();
@@ -64,9 +82,8 @@ public class ClientController : MonoBehaviour
         HostTopology topology = new HostTopology(config, 1);
         hostId = NetworkTransport.AddHost(topology, 0);
 
-        NetworkTransport.Connect(hostId, ClientMenuController.IPAddress, ClientMenuController.Port, 0, out error);
-        isStarted = true;
-        return (NetworkError)error;
+        NetworkTransport.Connect(hostId, ClientNetworkController.IPAddress, ClientNetworkController.Port, 0, out receiveError);
+        isInitialized = true;
     }
 
     public void Shutdown()

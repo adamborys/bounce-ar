@@ -53,8 +53,7 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 
 	public void BuildTarget()
 	{
-		// Every time new dataset for single target
-		// TO DO dialog jeśli użytkownik chce zbudować target w jakości medium na słabym aparacie
+		// New dataset for every (single) new target
 		ImageTargetBuilder.FrameQuality frameQuality = ImageTargetBuilder.FrameQuality.FRAME_QUALITY_MEDIUM;
 		if(Application.platform == RuntimePlatform.Android)
 			frameQuality = ImageTargetBuilder.FrameQuality.FRAME_QUALITY_HIGH;

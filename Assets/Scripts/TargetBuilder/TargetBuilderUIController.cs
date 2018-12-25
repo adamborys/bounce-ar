@@ -35,6 +35,7 @@ public class TargetBuilderUIController : MonoBehaviour
 
     private void CalibrateClick()
     {
+        // Setting (calibrating) displayed accelerometer values to neutral (0.5)
         Vector3 accelerationSnapshot = Input.acceleration;
         Quaternion fixedSnapshot =
             Quaternion.FromToRotation(new Vector3(0.0f, 0.0f, -1.0f), accelerationSnapshot);
@@ -53,6 +54,8 @@ public class TargetBuilderUIController : MonoBehaviour
 
     void Update()
     {
+        // Displaying changes of device's rotation according to accelerometer data and
+        // deciding whether user should be able to build target at current arrangement
         horizontalSlider.value = (float)(acceleration.x / 2 + 0.5);
         verticalSlider.value = (float)(acceleration.y / 2 + 0.5);
         if (0.45 <= horizontalSlider.value && horizontalSlider.value <= 0.55 &&
@@ -69,6 +72,7 @@ public class TargetBuilderUIController : MonoBehaviour
 
     private IEnumerator loadGameSceneAsync()
     {
+        Destroy(UserTargetController.UserTargetTransform.GetChild(0).gameObject);
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Game", LoadSceneMode.Additive);
 
         while(!asyncLoad.isDone)
