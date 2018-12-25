@@ -60,11 +60,12 @@ public class ServerController : MonoBehaviour
                 ServerNetworkController.IsConnected = true;
                 break;
             case NetworkEventType.DisconnectEvent:
+                // Wróć do sceny NetworkMenu jeśli w grze
                 ServerNetworkController.Log.text = "Client disconnected";
                 ServerNetworkController.IsConnected = false;
                 break;
             case NetworkEventType.DataEvent:
-                if(IsStarted)
+                if(ArenaController.IsReady && ArenaController.IsOpponentReady)
                 {
                     GameController.RefreshArena();
                 }
@@ -74,9 +75,11 @@ public class ServerController : MonoBehaviour
                 }              
                 break;
             case NetworkEventType.BroadcastEvent:
+                // Wróć do sceny NetworkMenu jeśli w grze
                 ServerNetworkController.Log.text = "Unexpected broadcast";
                 break;
             default:
+                // Wróć do sceny NetworkMenu jeśli w grze
                 ServerNetworkController.Log.text = "Network Event System error";
                 break;
         }

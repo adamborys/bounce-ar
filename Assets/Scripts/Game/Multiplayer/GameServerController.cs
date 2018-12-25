@@ -116,7 +116,7 @@ public class GameServerController : MonoBehaviour
 
     IEnumerator DelayedBallsLaunch()
     {
-        while(!ArenaController.IsReady && !ArenaController.IsOpponentReady)
+        while(!ArenaController.IsReady || !ArenaController.IsOpponentReady)
         {
             yield return null;
         }

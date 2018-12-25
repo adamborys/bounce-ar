@@ -59,9 +59,9 @@ public class NetworkController : MonoBehaviour
     // Changing UI functionality and resetting connection due to modified server-client choice
     private void ClientSwitch()
     {
-        ResetConnection();
         if (ClientToggle.isOn)
         {
+            ResetConnectionWhenSwitch();
             ServerToggle.isOn = false;
             IsServer = false;
             IPInput.readOnly = false;
@@ -70,6 +70,7 @@ public class NetworkController : MonoBehaviour
         }
         else
         {
+            ResetConnectionWhenSwitch();
             ServerToggle.isOn = true;
             IsServer = true;
             IPInput.readOnly = true;
@@ -80,9 +81,9 @@ public class NetworkController : MonoBehaviour
 
     private void ServerSwitch()
     {
-        ResetConnection();
         if (ServerToggle.isOn)
         {
+            ResetConnectionWhenSwitch();
             ClientToggle.isOn = false;
             IPInput.readOnly = true;
             IsServer = true;
@@ -91,6 +92,7 @@ public class NetworkController : MonoBehaviour
         }
         else
         {
+            ResetConnectionWhenSwitch();
             ClientToggle.isOn = true;
             IPInput.readOnly = false;
             IsServer = false;
@@ -155,6 +157,7 @@ public class NetworkController : MonoBehaviour
 
     public void ServerInit()
     {
+        ResetConnection();
         Provider = new GameObject("Server");
         ServerController serverController = Provider.AddComponent<ServerController>();
         serverController.ServerNetworkController = this;
@@ -162,6 +165,7 @@ public class NetworkController : MonoBehaviour
 
     public void ClientInit()
     {
+        ResetConnection();
         Provider = new GameObject("Client");
         ClientController clientController = Provider.AddComponent<ClientController>();
         clientController.ClientNetworkController = this;
@@ -173,11 +177,26 @@ public class NetworkController : MonoBehaviour
         {
             if (ServerToggle.isOn)
             {
-                Provider.AddComponent<ServerController>().Shutdown();
+                Provider.GetComponent<ServerController>().Shutdown();
             }
             else
             {
-                Provider.AddComponent<ClientController>().Shutdown();
+                Provider.GetComponent<ClientController>().Shutdown();
+            }
+            Destroy(Provider);
+        }
+    }
+    public void ResetConnectionWhenSwitch()
+    {
+        if (Provider != null)
+        {
+            if (ClientToggle.isOn)
+            {
+                Provider.GetComponent<ServerController>().Shutdown();
+            }
+            else
+            {
+                Provider.GetComponent<ClientController>().Shutdown();
             }
             Destroy(Provider);
         }

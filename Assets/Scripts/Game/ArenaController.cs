@@ -12,14 +12,15 @@ public class ArenaController : MonoBehaviour
     {
         get
         {
-            return IsOpponentReady;
+            return isOpponentReady;
         }
         set
         {
             Destroy(GameObject.Find("NotReadyCanvas"));
-            IsOpponentReady = value;
+            isOpponentReady = value;
         }
     }
+    private static bool isOpponentReady;
     public Slider scaleSlider;
     public Button readyButton;
 	Vector3 initialScale;
