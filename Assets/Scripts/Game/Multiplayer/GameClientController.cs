@@ -17,41 +17,56 @@ public class GameClientController : MonoBehaviour
     {
         serverBallTransform = transform.GetChild(0);
         clientBallTransform = transform.GetChild(1);
+
+        ClientController.ReceiveReadyMessage();
     }
     void Update()
     {
-        int pointerID;
-        if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-            pointerID = Input.GetTouch(0).fingerId;
-        else if(Application.platform == RuntimePlatform.WindowsEditor)
-            pointerID = -1;
-        else
-            return;
-
-        if (Input.GetMouseButtonDown(0) && // Ignoring UI touch
-        !EventSystem.current.IsPointerOverGameObject(pointerID))
+        if(ArenaController.IsReady && ArenaController.IsOpponentReady)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			RaycastHit hit;
-            LayerMask mask = LayerMask.GetMask("Default");
-            // Ignoring other layers than "Default"
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
-            {
-                if (isNewBarrier)
-                {
-                    firstPosition = transform.InverseTransformPoint(hit.point);
-                    StartCoroutine(DelayedBarrierRefresh());
-                }
-				else
-				{
-                    StopCoroutine(DelayedBarrierRefresh());
-					secondPosition = transform.InverseTransformPoint(hit.point);
+            int pointerID;
+            if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+                pointerID = Input.GetTouch(0).fingerId;
+            else if(Application.platform == RuntimePlatform.WindowsEditor)
+                pointerID = -1;
+            else
+                return;
 
-                    lastFirstPosition = firstPosition;
-                    lastSecondPosition = secondPosition;
-				}
-                isNewBarrier = !isNewBarrier;
+            if (Input.GetMouseButtonDown(0) && // Ignoring UI touch
+            !EventSystem.current.IsPointerOverGameObject(pointerID))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                LayerMask mask = LayerMask.GetMask("Default");
+                // Ignoring other layers than "Default"
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
+                {
+                    if (isNewBarrier)
+                    {
+                        firstPosition = transform.InverseTransformPoint(hit.point);
+                        StartCoroutine(DelayedBarrierRefresh());
+                    }
+                    else
+                    {
+                        StopCoroutine(DelayedBarrierRefresh());
+                        secondPosition = transform.InverseTransformPoint(hit.point);
+
+                        lastFirstPosition = firstPosition;
+                        lastSecondPosition = secondPosition;
+                    }
+                    isNewBarrier = !isNewBarrier;
+                }
             }
+        }
+    }
+    void FixedUpdate()
+    {
+        if(ArenaController.IsReady && ArenaController.IsOpponentReady)
+        {
+            // Sending client user input info
+            ClientMessage clientMessage = 
+                new ClientMessage(lastFirstPosition, lastSecondPosition);
+            NetworkController.Provider.GetComponent<ClientController>().SendClientMessage(clientMessage);
         }
     }
 
@@ -60,20 +75,13 @@ public class GameClientController : MonoBehaviour
         yield return new WaitForSeconds(1);
         isNewBarrier = true;
     }
-    void FixedUpdate()
-    {
-        // Sending client user input info
-        ClientMessage clientMessage = 
-            new ClientMessage(lastFirstPosition, lastSecondPosition);
-        NetworkController.Provider.GetComponent<ClientController>().SendClientMessage(clientMessage);
-    }
 
 
     public void RefreshArena()
     {
         // Deserializing received server game info
         BinaryFormatter formatter = new BinaryFormatter();
-        MemoryStream stream = new MemoryStream(ClientController.receivedBuffer);
+        MemoryStream stream = new MemoryStream(ClientController.ReceivedBuffer);
         ServerMessage serverMessage = (ServerMessage)formatter.Deserialize(stream);
 
         // Manipulating ball transforms according to server message

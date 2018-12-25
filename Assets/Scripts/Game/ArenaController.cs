@@ -8,6 +8,18 @@ using Vuforia;
 public class ArenaController : MonoBehaviour
 {
     public static bool IsReady;
+    public static bool IsOpponentReady
+    {
+        get
+        {
+            return IsOpponentReady;
+        }
+        set
+        {
+            Destroy(GameObject.Find("NotReadyCanvas"));
+            IsOpponentReady = value;
+        }
+    }
     public Slider scaleSlider;
     public Button readyButton;
 	Vector3 initialScale;
@@ -39,7 +51,7 @@ public class ArenaController : MonoBehaviour
     private void ReadyClick()
     {
         // Destroying game start UI
-        Destroy(gameObject.scene.GetRootGameObjects()[1]);
+        Destroy(GameObject.Find("GameStartUICanvas"));
         IsReady = true;
     }
 }

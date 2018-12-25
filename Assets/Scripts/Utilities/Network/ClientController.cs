@@ -8,22 +8,31 @@ using UnityEngine.Networking;
 
 public class ClientController : MonoBehaviour
 {
-    public static byte[] receivedBuffer;
+    public static byte[] ReceivedBuffer;
+    public static bool IsStarted;
+    public static GameClientController GameController;
+    public static int hostId, connectionId, channelId, messageSize;
+    public static byte sendError, receiveError;
     public NetworkController ClientNetworkController;
-    private int hostId, connectionId, channelId;
-    private bool isInitialized, isStarted;
-    private byte sendError, receiveError, connectionError;
+    private bool isInitialized;
 
     void Start()
     {
         Init();
     }
-    void Update()
+    void FixedUpdate()
     {
         if(isInitialized)
             UpdateServerMessage();
     }
 
+
+    public static void ReceiveReadyMessage()
+    {
+        NetworkEventType networkEventType = 
+            NetworkTransport.Receive(out hostId, out connectionId, out channelId,
+            ReceivedBuffer, MessageInfo.INITIAL_BYTE_SIZE, out messageSize, out receiveError);
+    }
     public void SendClientMessage(ClientMessage message)
     {
         byte[] buffer = new byte[MessageInfo.BYTE_SIZE];
@@ -36,12 +45,12 @@ public class ClientController : MonoBehaviour
     }
     private void UpdateServerMessage()
     {
-        receivedBuffer = new byte[MessageInfo.BYTE_SIZE];
+        ReceivedBuffer = new byte[MessageInfo.BYTE_SIZE];
         int messageSize;
         
         NetworkEventType networkEventType = 
             NetworkTransport.Receive(out hostId, out connectionId, out channelId,
-            receivedBuffer, MessageInfo.BYTE_SIZE, out messageSize, out receiveError);
+            ReceivedBuffer, MessageInfo.BYTE_SIZE, out messageSize, out receiveError);
 
         switch (networkEventType)
         {
@@ -56,13 +65,13 @@ public class ClientController : MonoBehaviour
                 ClientNetworkController.IsConnected = false;
                 break;
             case NetworkEventType.DataEvent:
-                if(isStarted)
+                if(IsStarted)
                 {
-                    
+                    GameController.RefreshArena();
                 }
                 else
                 {
-                    
+                    ArenaController.IsOpponentReady = true;
                 }        
                 break;
             case NetworkEventType.BroadcastEvent:

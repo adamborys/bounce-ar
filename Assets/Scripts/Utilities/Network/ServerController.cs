@@ -9,11 +9,13 @@ using System.IO;
 
 public class ServerController : MonoBehaviour
 {
-    public static byte[] receivedBuffer;
+    public static byte[] ReceivedBuffer;
+    public static bool IsStarted;
+    public static GameServerController GameController;
+    public static int hostId, connectionId, channelId, messageSize;
+    public static byte sendError, receiveError;
     public NetworkController ServerNetworkController;
-    private int hostId, serverChannelId, connectionId, channelId;
-    private bool isInitialized, isStarted;
-    private byte sendError, receiveError;
+    private bool isInitialized;
 
     void Start()
     {
@@ -25,6 +27,12 @@ public class ServerController : MonoBehaviour
             UpdateClientMessage();
     }
 
+    public static void ReceiveReadyMessage()
+    {
+        NetworkEventType networkEventType = 
+            NetworkTransport.Receive(out hostId, out connectionId, out channelId,
+            ReceivedBuffer, MessageInfo.INITIAL_BYTE_SIZE, out messageSize, out receiveError);
+    }
     public void SendServerMessage(ServerMessage message)
     {
         byte[] buffer = new byte[MessageInfo.BYTE_SIZE];
@@ -37,12 +45,11 @@ public class ServerController : MonoBehaviour
     }
     private void UpdateClientMessage()
     {
-        receivedBuffer = new byte[MessageInfo.BYTE_SIZE];
-        int messageSize;
+        ReceivedBuffer = new byte[MessageInfo.BYTE_SIZE];
         
         NetworkEventType networkEventType = 
             NetworkTransport.Receive(out hostId, out connectionId, out channelId,
-            receivedBuffer, MessageInfo.BYTE_SIZE, out messageSize, out receiveError);
+            ReceivedBuffer, MessageInfo.BYTE_SIZE, out messageSize, out receiveError);
 
         switch (networkEventType)
         {
@@ -57,13 +64,13 @@ public class ServerController : MonoBehaviour
                 ServerNetworkController.IsConnected = false;
                 break;
             case NetworkEventType.DataEvent:
-                if(isStarted)
+                if(IsStarted)
                 {
-                    
+                    GameController.RefreshArena();
                 }
                 else
                 {
-                    
+                    ArenaController.IsOpponentReady = true;
                 }              
                 break;
             case NetworkEventType.BroadcastEvent:
@@ -79,7 +86,7 @@ public class ServerController : MonoBehaviour
     {
         NetworkTransport.Init();
         ConnectionConfig config = new ConnectionConfig();
-        serverChannelId = config.AddChannel(QosType.AllCostDelivery);
+        channelId = config.AddChannel(QosType.AllCostDelivery);
         HostTopology topology = new HostTopology(config, 1);
         hostId = NetworkTransport.AddHost(topology, ServerNetworkController.Port, null);
         isInitialized = true;

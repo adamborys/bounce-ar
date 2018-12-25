@@ -79,6 +79,10 @@ public class TargetBuilderUIController : MonoBehaviour
         {
             yield return null;
         }
+        if(NetworkController.IsServer)
+            ServerController.GameController = GameObject.Find("Arena").AddComponent<GameServerController>();
+        else
+            ClientController.GameController = GameObject.Find("Arena").AddComponent<GameClientController>();
         Destroy(gameObject); // Destroy TargetBuilder UI
     }
 }

@@ -5,6 +5,7 @@ namespace Messages
     public class MessageInfo
     {
         public const int BYTE_SIZE = 1024;
+        public const int INITIAL_BYTE_SIZE = 512;
     }
     [System.Serializable]
     public class ClientMessage
