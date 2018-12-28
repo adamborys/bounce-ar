@@ -17,11 +17,10 @@ public class GameClientController : MonoBehaviour
     {
         serverBallTransform = transform.GetChild(0);
         clientBallTransform = transform.GetChild(1);
-
-        ClientController.ReceiveReadyMessage();
     }
     void Update()
     {
+        /*
         if(ArenaController.IsReady && ArenaController.IsOpponentReady)
         {
             int pointerID;
@@ -58,6 +57,7 @@ public class GameClientController : MonoBehaviour
                 }
             }
         }
+        */
     }
     void FixedUpdate()
     {
@@ -70,32 +70,27 @@ public class GameClientController : MonoBehaviour
         }
     }
 
+    public void RefreshArena(ServerMessage serverMessage)
+    {
+        Debug.Log("RefreshArena");
+        // Manipulating ball transforms according to server message
+        serverBallTransform.localPosition = new Vector3(serverMessage.ServerBallX, 0.004f, serverMessage.ServerBallY);
+        clientBallTransform.localPosition = new Vector3(serverMessage.ClientBallX, 0.004f, serverMessage.ClientBallY);
+        /*
+        // Building barriers according to server message
+        Destroy(serverBarrier);
+        Destroy(clientBarrier);
+        serverBarrier = BuildBarrier(serverMessage.ServerFirst, serverMessage.ServerFirst, "ServerBarrier");
+        clientBarrier = BuildBarrier(serverMessage.ClientFirst, serverMessage.ClientFirst, "ClientBarrier");
+        */
+    }
+
     private IEnumerator DelayedBarrierRefresh()
     {
         yield return new WaitForSeconds(1);
         isNewBarrier = true;
     }
-
-
-    public void RefreshArena()
-    {
-        // Deserializing received server game info
-        BinaryFormatter formatter = new BinaryFormatter();
-        MemoryStream stream = new MemoryStream(ClientController.ReceivedBuffer);
-        ServerMessage serverMessage = (ServerMessage)formatter.Deserialize(stream);
-
-        // Manipulating ball transforms according to server message
-        serverBallTransform.position = serverMessage.serverBallPosition;
-        clientBallTransform.position = serverMessage.clientBallPosition;
-
-        // Building barriers according to server message
-        Destroy(serverBarrier);
-        Destroy(clientBarrier);
-        serverBarrier = BuildBarrier(serverMessage.serverFirst, serverMessage.serverFirst, "ServerBarrier");
-        clientBarrier = BuildBarrier(serverMessage.clientFirst, serverMessage.clientFirst, "ClientBarrier");
-    }
-
-    GameObject BuildBarrier(Vector3 firstPosition, Vector3 secondPosition, string name)
+    private GameObject BuildBarrier(Vector3 firstPosition, Vector3 secondPosition, string name)
     {
         firstPosition.y = secondPosition.y = 0.0035f;
         Vector3 midpoint = (secondPosition - firstPosition) / 2 + firstPosition;

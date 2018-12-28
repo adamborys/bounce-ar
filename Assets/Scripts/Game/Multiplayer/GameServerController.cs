@@ -18,12 +18,11 @@ public class GameServerController : MonoBehaviour
     {
         serverBallTransform = transform.GetChild(0);
         clientBallTransform = transform.GetChild(1);
-
-        ServerController.ReceiveReadyMessage();
         StartCoroutine(DelayedBallsLaunch());
     }
     void Update()
     {
+        /* 
         if(ArenaController.IsReady && ArenaController.IsOpponentReady)
         {
             // IF READY SIGNAL SENT AND SERVER READY
@@ -61,21 +60,34 @@ public class GameServerController : MonoBehaviour
                 }
             }
         }
+        */
     }
     void FixedUpdate()
     {
         if(ArenaController.IsReady && ArenaController.IsOpponentReady)
         {
-            // Collision info processing
+            // Collision info processing (game logic)
             
 
             // Sending client user input info
             ServerMessage serverMessage = 
                 new ServerMessage(lastFirstPosition, lastSecondPosition, 
                                 lastClientFirstPosition, lastClientSecondPosition,
-                                serverBallTransform.position, clientBallTransform.position);
+                                serverBallTransform.localPosition, clientBallTransform.localPosition);
             NetworkController.Provider.GetComponent<ServerController>().SendServerMessage(serverMessage);
         }
+    }
+
+    public void RefreshArena(ClientMessage clientMessage)
+    {
+        Debug.Log("RefreshArena");
+        /* 
+        lastClientFirstPosition = clientMessage.First;
+        lastClientSecondPosition = clientMessage.Second;
+        // Building barriers according to server message
+        Destroy(clientBarrier);
+        clientBarrier = BuildBarrier(clientMessage.First, clientMessage.Second, "ClientBarrier");
+        */
     }
 
     private IEnumerator DelayedBarrierRefresh()
@@ -83,22 +95,16 @@ public class GameServerController : MonoBehaviour
         yield return new WaitForSeconds(1);
         isNewBarrier = true;
     }
-
-    public void RefreshArena()
+    private IEnumerator DelayedBallsLaunch()
     {
-        // Deserializing received server game info
-        BinaryFormatter formatter = new BinaryFormatter();
-        MemoryStream stream = new MemoryStream(ServerController.ReceivedBuffer);
-        ClientMessage clientMessage = (ClientMessage)formatter.Deserialize(stream);
-
-        lastClientFirstPosition = clientMessage.first;
-        lastClientSecondPosition = clientMessage.second;
-        // Building barriers according to server message
-        Destroy(clientBarrier);
-        clientBarrier = BuildBarrier(clientMessage.first, clientMessage.second, "ClientBarrier");
+        while(!(ArenaController.IsReady && ArenaController.IsOpponentReady))
+        {
+            yield return null;
+        }
+        serverBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
+        clientBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
     }
-
-    GameObject BuildBarrier(Vector3 firstPosition, Vector3 secondPosition, string name)
+    private GameObject BuildBarrier(Vector3 firstPosition, Vector3 secondPosition, string name)
     {
         firstPosition.y = secondPosition.y = 0.0035f;
         Vector3 midpoint = (secondPosition - firstPosition) / 2 + firstPosition;
@@ -112,15 +118,5 @@ public class GameServerController : MonoBehaviour
             new Vector3(0.0002f, 0.005f, Mathf.Clamp(barrierLength, 0.005f, 0.03f));
         barrier.transform.LookAt(transform.TransformPoint(secondPosition), transform.up);
         return barrier;
-    }
-
-    IEnumerator DelayedBallsLaunch()
-    {
-        while(!ArenaController.IsReady || !ArenaController.IsOpponentReady)
-        {
-            yield return null;
-        }
-        serverBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
-        clientBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
     }
 }

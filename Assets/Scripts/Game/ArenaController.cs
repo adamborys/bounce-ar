@@ -24,7 +24,7 @@ public class ArenaController : MonoBehaviour
     public Slider scaleSlider;
     public Button readyButton;
 	Vector3 initialScale;
-    // Use this for initialization
+    
     void Start()
     {
         scaleSlider.onValueChanged.AddListener(delegate { ScaleValueChanged(); });
@@ -34,7 +34,6 @@ public class ArenaController : MonoBehaviour
         scaleSlider.value = 0;
         transform.localScale = initialScale;
     }
-
     void Update()
     {
         // Manipulating Arena transform due to non-parenting it to UserTarget
@@ -48,11 +47,20 @@ public class ArenaController : MonoBehaviour
 		float scale = Mathf.Pow(scaleSlider.value + 1f, 2);
         transform.localScale = scale * initialScale;
     }
-
     private void ReadyClick()
     {
         // Destroying game start UI
         Destroy(GameObject.Find("GameStartUICanvas"));
         IsReady = true;
+        if (NetworkController.IsServer)
+        {
+            StartCoroutine(NetworkController.Provider
+                                            .GetComponent<ServerController>().ReadinessTransmitter);
+        }
+        else
+        {
+            StartCoroutine(NetworkController.Provider
+                                            .GetComponent<ClientController>().ReadinessTransmitter);
+        }
     }
 }

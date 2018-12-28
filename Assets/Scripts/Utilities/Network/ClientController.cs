@@ -14,11 +14,13 @@ public class ClientController : MonoBehaviour
     public static int hostId, connectionId, channelId, messageSize;
     public static byte sendError, receiveError;
     public NetworkController ClientNetworkController;
+    public IEnumerator ReadinessTransmitter;
     private bool isInitialized;
 
     void Start()
     {
         Init();
+        ReadinessTransmitter = TransmitClientReadyMessage();
     }
     void FixedUpdate()
     {
@@ -26,13 +28,6 @@ public class ClientController : MonoBehaviour
             UpdateServerMessage();
     }
 
-
-    public static void ReceiveReadyMessage()
-    {
-        NetworkEventType networkEventType = 
-            NetworkTransport.Receive(out hostId, out connectionId, out channelId,
-            ReceivedBuffer, MessageInfo.INITIAL_BYTE_SIZE, out messageSize, out receiveError);
-    }
     public void SendClientMessage(ClientMessage message)
     {
         byte[] buffer = new byte[MessageInfo.BYTE_SIZE];
@@ -62,18 +57,32 @@ public class ClientController : MonoBehaviour
                 break;
             case NetworkEventType.DisconnectEvent:
                 // Wróć do sceny NetworkMenu jeśli w grze
+                ArenaController.IsOpponentReady = false;
                 ClientNetworkController.Log.text = "Disconnected from server";
                 ClientNetworkController.IsConnected = false;
                 break;
             case NetworkEventType.DataEvent:
-                if(ArenaController.IsReady && ArenaController.IsOpponentReady)
+                // Deserializing received server game info
+                BinaryFormatter formatter = new BinaryFormatter();
+                MemoryStream stream = new MemoryStream(ReceivedBuffer);
+
+                if(!ArenaController.IsOpponentReady)
                 {
-                    GameController.RefreshArena();
+                    if(formatter.Deserialize(stream) is ReadyMessage)
+                    {
+                        ArenaController.IsOpponentReady = true;
+                        if(ReadinessTransmitter != null)
+                            StopCoroutine(ReadinessTransmitter);
+                    }
                 }
-                else
+                else if(ArenaController.IsReady)
                 {
-                    ArenaController.IsOpponentReady = true;
-                }        
+                    object message;
+                    if((message = formatter.Deserialize(stream)) is ServerMessage)
+                    {
+                        GameController.RefreshArena(message as ServerMessage);
+                    }
+                }
                 break;
             case NetworkEventType.BroadcastEvent:
                 // Wróć do sceny NetworkMenu jeśli w grze
@@ -86,7 +95,27 @@ public class ClientController : MonoBehaviour
         }
     }
 
-    public void Init()
+    public IEnumerator TransmitClientReadyMessage()
+    {
+        while(true)
+        {
+            byte[] buffer = new byte[MessageInfo.BYTE_SIZE];
+            
+            BinaryFormatter formatter = new BinaryFormatter();
+            MemoryStream stream = new MemoryStream(buffer);
+            formatter.Serialize(stream, new ReadyMessage());
+
+            NetworkTransport.Send(hostId, connectionId, channelId, buffer, MessageInfo.BYTE_SIZE, out sendError);
+            yield return new WaitForSeconds(0.25f);
+        }
+    }
+
+    public void Shutdown()
+    {
+        NetworkTransport.Shutdown();
+    }
+
+    private void Init()
     {
         NetworkTransport.Init();
         ConnectionConfig config = new ConnectionConfig();
@@ -96,10 +125,5 @@ public class ClientController : MonoBehaviour
 
         NetworkTransport.Connect(hostId, ClientNetworkController.IPAddress, ClientNetworkController.Port, 0, out receiveError);
         isInitialized = true;
-    }
-
-    public void Shutdown()
-    {
-        NetworkTransport.Shutdown();
     }
 }

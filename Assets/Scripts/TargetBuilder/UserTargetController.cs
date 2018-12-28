@@ -73,6 +73,7 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
         	log.text = "Target built";
 			log.color = Color.green;
 			TargetBuilderUIController.startButton.interactable = true;
+			transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = true;
 		}
 		else
 		{
