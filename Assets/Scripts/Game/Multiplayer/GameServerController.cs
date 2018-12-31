@@ -23,7 +23,7 @@ public class GameServerController : MonoBehaviour
         clientBallController = clientBallTransform.gameObject.AddComponent<BallController>();
         serverBallController.Direction = new Vector3(0,0,1);
         clientBallController.Direction = new Vector3(0,0,-1);
-        serverBallController.Speed = clientBallController.Speed = 0.1f;
+        serverBallController.Speed = clientBallController.Speed = 0.01f;
         StartCoroutine(DelayedBallsLaunch());
     }
     void Update()
