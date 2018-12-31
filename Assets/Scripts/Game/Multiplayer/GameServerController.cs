@@ -10,6 +10,7 @@ public class GameServerController : MonoBehaviour
 {
     public static Vector3 lastClientFirstPosition, lastClientSecondPosition;
     Transform serverBallTransform, clientBallTransform;
+    BallController serverBallController, clientBallController;
     GameObject serverBarrier, clientBarrier;
     Vector3 firstPosition, secondPosition, lastFirstPosition, lastSecondPosition;
     bool isNewBarrier = true;
@@ -18,6 +19,11 @@ public class GameServerController : MonoBehaviour
     {
         serverBallTransform = transform.GetChild(0);
         clientBallTransform = transform.GetChild(1);
+        serverBallController = serverBallTransform.gameObject.AddComponent<BallController>();
+        clientBallController = clientBallTransform.gameObject.AddComponent<BallController>();
+        serverBallController.Direction = new Vector3(0,0,1);
+        clientBallController.Direction = new Vector3(0,0,-1);
+        serverBallController.Speed = clientBallController.Speed = 0.1f;
         StartCoroutine(DelayedBallsLaunch());
     }
     void Update()

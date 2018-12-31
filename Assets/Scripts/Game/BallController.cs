@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class BallController : MonoBehaviour
 {
-	public Vector3 direction;
-    public float speed = 0.1f;
+	public Vector3 Direction;
+    public float Speed;
     bool isLaunched;
     Rigidbody ball;
 	SphereCollider ballCollider;
@@ -21,7 +21,7 @@ public class BallController : MonoBehaviour
     {
         if(isLaunched)
         {
-            transform.Translate(direction * speed);
+            transform.Translate(Direction * Speed);
         }
     }
 
@@ -34,6 +34,6 @@ public class BallController : MonoBehaviour
     {
         // Simple bouncing
         Vector3 colliderNormal = transform.InverseTransformDirection(col.contacts[0].normal);
-        direction = Vector3.Reflect(direction, colliderNormal);
+        Direction = Vector3.Reflect(Direction, colliderNormal);
     }
 }

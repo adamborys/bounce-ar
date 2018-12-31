@@ -693,7 +693,6 @@ GameObject:
   - component: {fileID: 1072226132}
   - component: {fileID: 1072226131}
   - component: {fileID: 1072226130}
-  - component: {fileID: 1072226133}
   - component: {fileID: 1072226134}
   m_Layer: 2
   m_Name: ServerBall
@@ -774,20 +773,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1072226128}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1072226133
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1072226128}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1e16f5ef8b254f42963422af5eaaaea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  direction: {x: 0, y: 0, z: 0}
-  speed: 0.01
 --- !u!54 &1072226134
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1864,7 +1849,6 @@ GameObject:
   - component: {fileID: 1764101380}
   - component: {fileID: 1764101379}
   - component: {fileID: 1764101378}
-  - component: {fileID: 1764101377}
   - component: {fileID: 1764101376}
   m_Layer: 2
   m_Name: ClientBall
@@ -1903,20 +1887,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1764101377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1764101374}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1e16f5ef8b254f42963422af5eaaaea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  direction: {x: 0, y: 0, z: -1}
-  speed: 0.01
 --- !u!135 &1764101378
 SphereCollider:
   m_ObjectHideFlags: 0
