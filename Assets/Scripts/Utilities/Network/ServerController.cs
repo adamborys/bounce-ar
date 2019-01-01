@@ -20,7 +20,7 @@ public class ServerController : MonoBehaviour
 
     void Start()
     {
-        Init();
+        init();
         ReadinessTransmitter = TransmitServerReadyMessage();
     }
     void FixedUpdate()
@@ -109,7 +109,7 @@ public class ServerController : MonoBehaviour
         }
     }
 
-    private void Init()
+    private void init()
     {
         NetworkTransport.Init();
         ConnectionConfig config = new ConnectionConfig();

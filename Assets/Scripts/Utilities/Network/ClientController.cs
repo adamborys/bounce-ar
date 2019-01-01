@@ -19,7 +19,7 @@ public class ClientController : MonoBehaviour
 
     void Start()
     {
-        Init();
+        init();
         ReadinessTransmitter = TransmitClientReadyMessage();
     }
     void FixedUpdate()
@@ -44,8 +44,8 @@ public class ClientController : MonoBehaviour
         int messageSize;
         
         NetworkEventType networkEventType = 
-            NetworkTransport.Receive(out hostId, out connectionId, out channelId,
-            ReceivedBuffer, MessageInfo.BYTE_SIZE, out messageSize, out receiveError);
+                NetworkTransport.Receive(out hostId, out connectionId, out channelId,
+                ReceivedBuffer, MessageInfo.BYTE_SIZE, out messageSize, out receiveError);
 
         switch (networkEventType)
         {
@@ -110,7 +110,7 @@ public class ClientController : MonoBehaviour
         }
     }
 
-    private void Init()
+    private void init()
     {
         NetworkTransport.Init();
         ConnectionConfig config = new ConnectionConfig();
