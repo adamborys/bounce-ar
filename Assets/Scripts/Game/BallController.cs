@@ -35,5 +35,6 @@ public class BallController : MonoBehaviour
         // Simple bouncing
         Vector3 colliderNormal = transform.InverseTransformDirection(col.contacts[0].normal);
         Direction = Vector3.Reflect(Direction, colliderNormal);
+        Direction.y = 0;
     }
 }
