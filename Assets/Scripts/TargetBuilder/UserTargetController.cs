@@ -61,6 +61,7 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 		{
 			if(objectTracker != null)
 			{
+				objectTracker.DestroyAllDataSets(true);
 				dataSet = objectTracker.CreateDataSet();
 			}
 			else

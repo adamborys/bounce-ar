@@ -52,6 +52,10 @@ public class NetworkController : MonoBehaviour
         ClientToggle.onValueChanged.AddListener(delegate { ClientSwitch(); });
         SubmitButton.onClick.AddListener(delegate { PlayClick(); });
         submitButtonLabel = SubmitButton.GetComponentInChildren<Text>();
+
+        // Defaults for convenience
+        IPInput.text = "192.168.43.1";
+        PortInput.text = "11113";
     }
 
     #region UI listeners  
