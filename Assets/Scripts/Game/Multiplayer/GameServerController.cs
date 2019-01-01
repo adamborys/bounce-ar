@@ -8,12 +8,15 @@ using UnityEngine.EventSystems;
 
 public class GameServerController : MonoBehaviour
 {
-    public static Vector3 lastClientFirstPosition, lastClientSecondPosition;
-    Transform serverBallTransform, clientBallTransform;
-    BallController serverBallController, clientBallController;
-    GameObject serverBarrier, clientBarrier;
-    Vector3 firstPosition, secondPosition, lastFirstPosition, lastSecondPosition;
-    bool isNewBarrier = true;
+    public static Vector3 LastClientFirstPosition, LastClientSecondPosition;
+    private Transform serverBallTransform, clientBallTransform;
+    private BallController serverBallController, clientBallController;
+    private GameObject serverBarrier, clientBarrier;
+    private Vector3 firstPosition, secondPosition, lastFirstPosition, lastSecondPosition;
+    private bool isNewBarrier = true;
+    private byte networkIterator = 0;
+
+
     
     void Start()
     {
@@ -76,11 +79,17 @@ public class GameServerController : MonoBehaviour
             
 
             // Sending client user input info
-            ServerMessage serverMessage = 
-                new ServerMessage(lastFirstPosition, lastSecondPosition, 
-                                lastClientFirstPosition, lastClientSecondPosition,
-                                serverBallTransform.localPosition, clientBallTransform.localPosition);
-            NetworkController.Provider.GetComponent<ServerController>().SendServerMessage(serverMessage);
+            if(networkIterator == 0)
+            {
+                ServerMessage serverMessage = 
+                    new ServerMessage(lastFirstPosition, lastSecondPosition, 
+                                    LastClientFirstPosition, LastClientSecondPosition,
+                                    serverBallTransform.localPosition, clientBallTransform.localPosition);
+                NetworkController.Provider.GetComponent<ServerController>().SendServerMessage(serverMessage);
+            }
+
+            networkIterator++;
+            networkIterator %= 3;
         }
     }
 
@@ -88,8 +97,8 @@ public class GameServerController : MonoBehaviour
     {
         Debug.Log("RefreshArena");
         /* 
-        lastClientFirstPosition = clientMessage.First;
-        lastClientSecondPosition = clientMessage.Second;
+        LastClientFirstPosition = clientMessage.First;
+        LastClientSecondPosition = clientMessage.Second;
         // Building barriers according to server message
         Destroy(clientBarrier);
         clientBarrier = BuildBarrier(clientMessage.First, clientMessage.Second, "ClientBarrier");

@@ -8,10 +8,10 @@ using UnityEngine.EventSystems;
 
 public class GameClientController : MonoBehaviour
 {
-    Transform serverBallTransform, clientBallTransform;
-    GameObject serverBarrier, clientBarrier;
-    Vector3 firstPosition, secondPosition, lastFirstPosition, lastSecondPosition;
-    bool isNewBarrier = true;
+    private Transform serverBallTransform, clientBallTransform;
+    private GameObject serverBarrier, clientBarrier;
+    private Vector3 firstPosition, secondPosition, lastFirstPosition, lastSecondPosition;
+    private bool isNewBarrier = true;
     
     void Start()
     {
