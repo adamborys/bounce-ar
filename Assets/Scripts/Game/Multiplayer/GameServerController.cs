@@ -8,15 +8,18 @@ using UnityEngine.EventSystems;
 
 public class GameServerController : MonoBehaviour
 {
-    public static Vector3 LastClientFirstPosition, LastClientSecondPosition;
     private Transform serverBallTransform, clientBallTransform;
     private BallController serverBallController, clientBallController;
     private GameObject serverBarrier, clientBarrier;
-    private Vector3 firstPosition, secondPosition, lastFirstPosition, lastSecondPosition;
+    private Vector3 firstPosition, secondPosition, 
+                    lastFirstPosition = new Vector3(0.01f,0,-0.06f), 
+                    lastSecondPosition = new Vector3(0.04f,0,-0.06f),
+                    lastClientFirstPosition = new Vector3(-0.01f,0,0.06f), 
+                    lastClientSecondPosition = new Vector3(-0.04f,0,0.06f);
     private bool isNewBarrier = true;
+
+    // Iterator for reducing network overload
     private byte networkIterator = 0;
-
-
     
     void Start()
     {
@@ -31,7 +34,6 @@ public class GameServerController : MonoBehaviour
     }
     void Update()
     {
-        /* 
         if(ArenaController.IsReady && ArenaController.IsOpponentReady)
         {
             // IF READY SIGNAL SENT AND SERVER READY
@@ -69,7 +71,6 @@ public class GameServerController : MonoBehaviour
                 }
             }
         }
-        */
     }
     void FixedUpdate()
     {
@@ -83,7 +84,7 @@ public class GameServerController : MonoBehaviour
             {
                 ServerMessage serverMessage = 
                     new ServerMessage(lastFirstPosition, lastSecondPosition, 
-                                    LastClientFirstPosition, LastClientSecondPosition,
+                                    lastClientFirstPosition, lastClientSecondPosition,
                                     serverBallTransform.localPosition, clientBallTransform.localPosition);
                 NetworkController.Provider.GetComponent<ServerController>().SendServerMessage(serverMessage);
             }
@@ -96,13 +97,18 @@ public class GameServerController : MonoBehaviour
     public void RefreshArena(ClientMessage clientMessage)
     {
         Debug.Log("RefreshArena");
-        /* 
-        LastClientFirstPosition = clientMessage.First;
-        LastClientSecondPosition = clientMessage.Second;
-        // Building barriers according to server message
+        
+        lastClientFirstPosition = new Vector3(clientMessage.FirstX, 0, clientMessage.FirstY);
+        lastClientSecondPosition = new Vector3(clientMessage.SecondX, 0, clientMessage.SecondY);
+
+        Destroy(serverBarrier);
         Destroy(clientBarrier);
-        clientBarrier = BuildBarrier(clientMessage.First, clientMessage.Second, "ClientBarrier");
-        */
+        clientBarrier = BuildBarrier(new Vector2(lastClientFirstPosition.x, lastClientFirstPosition.z), 
+                                    new Vector2(lastClientSecondPosition.x, lastClientSecondPosition.z), 
+                                    "ClientBarrier");
+        serverBarrier = BuildBarrier(new Vector2(lastFirstPosition.x, lastFirstPosition.z), 
+                                    new Vector2(lastSecondPosition.x, lastSecondPosition.z), 
+                                    "ClientBarrier");
     }
 
     private IEnumerator DelayedBarrierRefresh()
@@ -119,19 +125,21 @@ public class GameServerController : MonoBehaviour
         serverBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
         clientBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
     }
-    private GameObject BuildBarrier(Vector3 firstPosition, Vector3 secondPosition, string name)
+    private GameObject BuildBarrier(Vector2 firstPosition2D, Vector2 secondPosition2D, string name)
     {
-        firstPosition.y = secondPosition.y = 0.0035f;
-        Vector3 midpoint = (secondPosition - firstPosition) / 2 + firstPosition;
+        Vector3 firstPosition3D = new Vector3(firstPosition2D.x, 0.0035f, firstPosition2D.y);
+        Vector3 secondPosition3D = new Vector3(secondPosition2D.x, 0.0035f, secondPosition2D.y);
+        
+        Vector3 midpoint = (secondPosition3D - firstPosition3D) / 2 + firstPosition3D;
 
         GameObject barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
         barrier.transform.SetParent(transform, false);
         barrier.name = name;
         barrier.transform.localPosition = midpoint;
-        float barrierLength = Vector3.Distance(firstPosition, secondPosition);
+        float barrierLength = Vector3.Distance(firstPosition3D, secondPosition3D);
         barrier.transform.localScale = 
             new Vector3(0.0002f, 0.005f, Mathf.Clamp(barrierLength, 0.005f, 0.03f));
-        barrier.transform.LookAt(transform.TransformPoint(secondPosition), transform.up);
+        barrier.transform.LookAt(transform.TransformPoint(secondPosition3D), transform.up);
         return barrier;
     }
 }

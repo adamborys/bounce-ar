@@ -77,9 +77,10 @@ public class ServerController : MonoBehaviour
                 }
                 else if(ArenaController.IsReady)
                 {
-                    if(formatter.Deserialize(stream) is ClientMessage)
+                    object message;
+                    if((message = formatter.Deserialize(stream)) is ClientMessage)
                     {
-
+                        GameController.RefreshArena(message as ClientMessage);
                     }
                 }
                 break;
