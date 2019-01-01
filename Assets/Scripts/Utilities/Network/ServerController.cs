@@ -109,11 +109,6 @@ public class ServerController : MonoBehaviour
         }
     }
 
-    public void Shutdown()
-    {
-        NetworkTransport.Shutdown();
-    }
-
     private void Init()
     {
         NetworkTransport.Init();

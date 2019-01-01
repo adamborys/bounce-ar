@@ -110,11 +110,6 @@ public class ClientController : MonoBehaviour
         }
     }
 
-    public void Shutdown()
-    {
-        NetworkTransport.Shutdown();
-    }
-
     private void Init()
     {
         NetworkTransport.Init();

@@ -63,9 +63,9 @@ public class NetworkController : MonoBehaviour
     // Changing UI functionality and resetting connection due to modified server-client choice
     private void ClientSwitch()
     {
+        ResetConnection();
         if (ClientToggle.isOn)
         {
-            ResetConnectionWhenSwitch();
             ServerToggle.isOn = false;
             IsServer = false;
             IPInput.readOnly = false;
@@ -74,20 +74,20 @@ public class NetworkController : MonoBehaviour
         }
         else
         {
-            ResetConnectionWhenSwitch();
             ServerToggle.isOn = true;
             IsServer = true;
             IPInput.readOnly = true;
             IPInput.text = GetLocalIPAddress();
             submitButtonLabel.text = "Start";
         }
+        Log.text = "Enter data and click to establish connection";
     }
 
     private void ServerSwitch()
     {
+        ResetConnection();
         if (ServerToggle.isOn)
         {
-            ResetConnectionWhenSwitch();
             ClientToggle.isOn = false;
             IPInput.readOnly = true;
             IsServer = true;
@@ -96,13 +96,13 @@ public class NetworkController : MonoBehaviour
         }
         else
         {
-            ResetConnectionWhenSwitch();
             ClientToggle.isOn = true;
             IPInput.readOnly = false;
             IsServer = false;
             IPInput.text = "";
             submitButtonLabel.text = "Connect";
         }
+        Log.text = "Enter data and click to establish connection";
     }
 
     private void PlayClick()
@@ -179,31 +179,8 @@ public class NetworkController : MonoBehaviour
     {
         if (Provider != null)
         {
-            if (ServerToggle.isOn)
-            {
-                Provider.GetComponent<ServerController>().Shutdown();
-            }
-            else
-            {
-                Provider.GetComponent<ClientController>().Shutdown();
-            }
+            NetworkTransport.Shutdown();
             Destroy(Provider);
         }
-    }
-    public void ResetConnectionWhenSwitch()
-    {
-        if (Provider != null)
-        {
-            if (ClientToggle.isOn)
-            {
-                Provider.GetComponent<ServerController>().Shutdown();
-            }
-            else
-            {
-                Provider.GetComponent<ClientController>().Shutdown();
-            }
-            Destroy(Provider);
-        }
-        Log.text = "Enter data and click to establish connection";
     }
 }
