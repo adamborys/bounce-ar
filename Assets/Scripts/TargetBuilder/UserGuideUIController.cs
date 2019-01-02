@@ -10,10 +10,12 @@ public class UserGuideUIController : MonoBehaviour
     public Button prevButton, nextButton;
 	public Text prevButtonLabel, nextButtonLabel;
     public GameObject first, second, third, fourth;
-	int iterator;
+	private int iterator;
+    private TargetBuilderUIController targetBuilderUIController;
 
     void Start()
     {
+		targetBuilderUIController = transform.parent.gameObject.GetComponent<TargetBuilderUIController>();
         prevButton.onClick.AddListener(delegate { PrevClick(); });
         nextButton.onClick.AddListener(delegate { NextClick(); });
         second.SetActive(false);
@@ -28,8 +30,8 @@ public class UserGuideUIController : MonoBehaviour
 		{
 			case 1:
 				gameObject.SetActive(false);
-				TargetBuilderUIController.calibrateButton.interactable = true;
-				TargetBuilderUIController.buildButton.interactable = true;
+				targetBuilderUIController.CalibrateButton.interactable = true;
+				targetBuilderUIController.BuildButton.interactable = true;
 				IsActive = false;
 				break;
 			case 2:
@@ -75,8 +77,8 @@ public class UserGuideUIController : MonoBehaviour
 				break;
 			case 4:
 				gameObject.SetActive(false);
-				TargetBuilderUIController.calibrateButton.interactable = true;
-				TargetBuilderUIController.buildButton.interactable = true;
+				targetBuilderUIController.CalibrateButton.interactable = true;
+				targetBuilderUIController.BuildButton.interactable = true;
 				IsActive = false;
 				break;
 		}

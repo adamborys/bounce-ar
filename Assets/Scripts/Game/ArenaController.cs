@@ -30,23 +30,24 @@ public class ArenaController : MonoBehaviour
         scaleSlider.onValueChanged.AddListener(delegate { ScaleValueChanged(); });
         readyButton.onClick.AddListener(delegate { ReadyClick(); });
 
-        initialScale = new Vector3(10f, 10f, 10f);
+        initialScale = new Vector3(5f, 5f, 5f);
         scaleSlider.value = 0;
         transform.localScale = initialScale;
     }
+    // Manipulating Arena transform due to non-parenting it to UserTarget
     void Update()
     {
-        // Manipulating Arena transform due to non-parenting it to UserTarget
         transform.position = UserTargetController.UserTargetTransform.position;
         transform.rotation = UserTargetController.UserTargetTransform.rotation;
     }
 
+    // Scaling before playing for personal convenience
     private void ScaleValueChanged()
     {
-        // Scaling before playing for personal convenience
 		float scale = Mathf.Pow(scaleSlider.value + 1f, 2);
         transform.localScale = scale * initialScale;
     }
+    // Destroying UI after Readiness reported
     private void ReadyClick()
     {
         // Destroying game start UI

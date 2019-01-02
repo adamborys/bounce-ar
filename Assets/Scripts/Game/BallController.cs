@@ -7,10 +7,9 @@ public class BallController : MonoBehaviour
 {
 	public Vector3 Direction;
     public float Speed;
-    bool isLaunched;
-    Rigidbody ball;
-	SphereCollider ballCollider;
-    LayerMask mask;
+    private bool isLaunched;
+    private Rigidbody ball;
+    private LayerMask mask;
 
     void Start()
     {
@@ -30,6 +29,7 @@ public class BallController : MonoBehaviour
         isLaunched = true;
     }
 
+    // Scaling before playing for personal convenience
     private void OnCollisionEnter(Collision col)
     {
         // Simple bouncing

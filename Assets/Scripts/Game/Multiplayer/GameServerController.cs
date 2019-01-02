@@ -32,6 +32,7 @@ public class GameServerController : MonoBehaviour
         serverBallController.Speed = clientBallController.Speed = 0.01f;
         StartCoroutine(DelayedBallsLaunch());
     }
+    // Maintaining game imput
     void Update()
     {
         if(ArenaController.IsReady && ArenaController.IsOpponentReady)
@@ -79,7 +80,7 @@ public class GameServerController : MonoBehaviour
             // Collision info processing (game logic)
             
 
-            // Sending client user input info
+            // Sending server user input info
             if(networkIterator == 0)
             {
                 ServerMessage serverMessage = 
@@ -111,11 +112,6 @@ public class GameServerController : MonoBehaviour
                                     "ClientBarrier");
     }
 
-    private IEnumerator DelayedBarrierRefresh()
-    {
-        yield return new WaitForSeconds(1);
-        isNewBarrier = true;
-    }
     private IEnumerator DelayedBallsLaunch()
     {
         while(!(ArenaController.IsReady && ArenaController.IsOpponentReady))
@@ -125,6 +121,13 @@ public class GameServerController : MonoBehaviour
         serverBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
         clientBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
     }
+    // Neutralising random clicks
+    private IEnumerator DelayedBarrierRefresh()
+    {
+        yield return new WaitForSeconds(1);
+        isNewBarrier = true;
+    }
+    // Building barrier from two touch/mouse coordinates
     private GameObject BuildBarrier(Vector2 firstPosition2D, Vector2 secondPosition2D, string name)
     {
         Vector3 firstPosition3D = new Vector3(firstPosition2D.x, 0.0035f, firstPosition2D.y);

@@ -8,7 +8,7 @@ public class CameraFocusController : MonoBehaviour
 {
     void Start()
     {
-        var vuforiaController = VuforiaARController.Instance;
+        VuforiaARController vuforiaController = VuforiaARController.Instance;
         vuforiaController.RegisterVuforiaStartedCallback(OnVuforiaStarted);
         vuforiaController.RegisterOnPauseCallback(OnPaused);
     }

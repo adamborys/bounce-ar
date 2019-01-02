@@ -7,6 +7,7 @@ using Vuforia;
 public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandler
 {
 	public static Transform UserTargetTransform;
+	public TargetBuilderUIController UIController;
 	ImageTargetBehaviour targetBehaviour;
 	UserDefinedTargetBuildingBehaviour udtbBehaviour;
 	ImageTargetBuilder.FrameQuality udtbFrameQuality;
@@ -73,7 +74,7 @@ public class UserTargetController : MonoBehaviour, IUserDefinedTargetEventHandle
 			udtbBehaviour.BuildNewTarget("UserTarget", targetBehaviour.GetSize().x);
         	log.text = "Target built";
 			log.color = Color.green;
-			TargetBuilderUIController.startButton.interactable = true;
+			UIController.StartButton.interactable = true;
 			transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = true;
 		}
 		else

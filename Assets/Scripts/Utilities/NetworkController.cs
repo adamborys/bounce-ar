@@ -69,7 +69,7 @@ public class NetworkController : MonoBehaviour
             ServerToggle.isOn = false;
             IsServer = false;
             IPInput.readOnly = false;
-            IPInput.text = "";
+            IPInput.text = "192.168.43.1";
             submitButtonLabel.text = "Connect";
         }
         else
@@ -99,12 +99,14 @@ public class NetworkController : MonoBehaviour
             ClientToggle.isOn = true;
             IPInput.readOnly = false;
             IsServer = false;
-            IPInput.text = "";
+            IPInput.text = "192.168.43.1";
             submitButtonLabel.text = "Connect";
         }
         Log.text = "Enter data and click to establish connection";
     }
 
+    // 1. Parsing text input and if correct - CONNECTING
+    // 2. IF CONNECTED - Parsing text input and if correct - LOADING TargetBuilder SCENE
     private void PlayClick()
     {
         if (!isConnected)

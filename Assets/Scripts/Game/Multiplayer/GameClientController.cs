@@ -22,6 +22,7 @@ public class GameClientController : MonoBehaviour
         serverBallTransform = transform.GetChild(0);
         clientBallTransform = transform.GetChild(1);
     }
+    // Maintaining game imput
     void Update()
     {
         if(ArenaController.IsReady && ArenaController.IsOpponentReady)
@@ -96,11 +97,13 @@ public class GameClientController : MonoBehaviour
                                     "ClientBarrier");
     }
 
+    // Neutralising random clicks
     private IEnumerator DelayedBarrierRefresh()
     {
         yield return new WaitForSeconds(1);
         isNewBarrier = true;
     }
+    // Building barrier from two touch/mouse coordinates
     private GameObject BuildBarrier(Vector2 firstPosition2D, Vector2 secondPosition2D, string name)
     {
         Vector3 firstPosition3D = new Vector3(firstPosition2D.x, 0.0035f, firstPosition2D.y);

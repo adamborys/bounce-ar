@@ -84,10 +84,6 @@ public class ClientController : MonoBehaviour
                     }
                 }
                 break;
-            case NetworkEventType.BroadcastEvent:
-                // Wróć do sceny NetworkMenu jeśli w grze
-                ClientNetworkController.Log.text = "Unexpected broadcast";
-                break;
             default:
                 // Wróć do sceny NetworkMenu jeśli w grze
                 ClientNetworkController.Log.text = "Network Event system error";
@@ -106,7 +102,7 @@ public class ClientController : MonoBehaviour
             formatter.Serialize(stream, new ReadyMessage());
 
             NetworkTransport.Send(hostId, connectionId, channelId, buffer, MessageInfo.BYTE_SIZE, out sendError);
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
