@@ -141,7 +141,7 @@ public class GameServerController : MonoBehaviour
         barrier.transform.localPosition = midpoint;
         float barrierLength = Vector3.Distance(firstPosition3D, secondPosition3D);
         barrier.transform.localScale = 
-            new Vector3(0.0002f, 0.005f, Mathf.Clamp(barrierLength, 0.005f, 0.03f));
+            new Vector3(0.001f, 0.005f, Mathf.Clamp(barrierLength, 0.005f, 0.03f));
         barrier.transform.LookAt(transform.TransformPoint(secondPosition3D), transform.up);
         return barrier;
     }

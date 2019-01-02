@@ -8,12 +8,13 @@ public class BallController : MonoBehaviour
 	public Vector3 Direction;
     public float Speed;
     private bool isLaunched;
-    private Rigidbody ball;
+    private SphereCollider ballCollider;
+    private Vector3 collisionNormal;
     private LayerMask mask;
 
     void Start()
     {
-        ball = GetComponent<Rigidbody>();
+        ballCollider = GetComponent<SphereCollider>();
     }
 
     void FixedUpdate()
@@ -33,8 +34,19 @@ public class BallController : MonoBehaviour
     private void OnCollisionEnter(Collision col)
     {
         // Simple bouncing
-        Vector3 colliderNormal = transform.InverseTransformDirection(col.contacts[0].normal);
-        Direction = Vector3.Reflect(Direction, colliderNormal);
-        Direction.y = 0;
+        collisionNormal = transform.InverseTransformDirection(col.contacts[0].normal);
+        collisionNormal.y = 0;
+        Direction = Vector3.Reflect(Direction, collisionNormal);
+    }
+    
+    // Fail-safe collider interlock fix
+    public void OnCollisionStay(Collision col)
+    {
+        float depth;
+        Vector3 direction;
+        Physics.ComputePenetration(ballCollider, transform.position, transform.rotation,
+                                    col.collider, col.transform.position, col.transform.rotation,
+                                    out direction, out depth);
+        transform.Translate(depth * direction * 1.415f);
     }
 }
