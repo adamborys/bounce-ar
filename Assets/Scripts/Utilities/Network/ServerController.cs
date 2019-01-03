@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 using Messages;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 public class ServerController : MonoBehaviour
 {
@@ -56,10 +57,22 @@ public class ServerController : MonoBehaviour
                 ServerNetworkController.IsConnected = true;
                 break;
             case NetworkEventType.DisconnectEvent:
-                // Wróć do sceny NetworkMenu jeśli w grze
-                ArenaController.IsOpponentReady = false;
-                ServerNetworkController.Log.text = "Client disconnected";
-                ServerNetworkController.IsConnected = false;
+                Debug.Log(SceneManager.GetActiveScene().name);
+                if(SceneManager.GetActiveScene().name == "NetworkMenu")
+                {
+                    ServerNetworkController.Log.text = "Client disconnected";
+                    ServerNetworkController.IsConnected = false;
+                }
+                else
+                {
+                    NetworkController.Provider = null;
+                    Destroy(gameObject);
+                    NetworkTransport.Shutdown();
+                    SceneManager.LoadScene(0);
+                    NetworkController.IsServer = false;
+                    ArenaController.IsReady = false;
+                    ArenaController.IsOpponentReady = false;
+                }
                 break;
             case NetworkEventType.DataEvent:
                 // Deserializing received client message

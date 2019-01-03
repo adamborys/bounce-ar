@@ -181,6 +181,8 @@ public class NetworkController : MonoBehaviour
     {
         if (Provider != null)
         {
+            Provider = null;
+            IsConnected = false;
             NetworkTransport.Shutdown();
             Destroy(Provider);
         }
