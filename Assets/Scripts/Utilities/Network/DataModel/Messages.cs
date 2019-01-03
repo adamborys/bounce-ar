@@ -72,4 +72,18 @@ namespace Messages
         public float ClientBallX { get => clientBallX; }
         public float ClientBallY { get => clientBallY; }
     }
+    [System.Serializable]
+    public class ScoreMessage
+    {
+        private int serverScore, clientScore;
+
+        public ScoreMessage(int serverScore, int clientScore)
+        {
+            this.serverScore = serverScore;
+            this.clientScore = clientScore;
+        }
+
+        public float ServerScore { get => serverScore; }
+        public float ClientScore { get => clientScore; }
+    }
 }
