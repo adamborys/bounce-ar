@@ -36,6 +36,7 @@ public class BallController : MonoBehaviour
         // Simple bouncing
         collisionNormal = transform.InverseTransformDirection(col.contacts[0].normal);
         collisionNormal.y = 0;
+        collisionNormal.Normalize();
         Direction = Vector3.Reflect(Direction, collisionNormal);
     }
     
@@ -47,6 +48,7 @@ public class BallController : MonoBehaviour
         Physics.ComputePenetration(ballCollider, transform.position, transform.rotation,
                                     col.collider, col.transform.position, col.transform.rotation,
                                     out direction, out depth);
+        direction.y = 0;
         transform.Translate(depth * direction * 1.415f);
     }
 }
