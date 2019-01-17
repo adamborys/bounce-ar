@@ -19,6 +19,8 @@ public class GameServerController : MonoBehaviour
         set
         {
             ServerScoreText.text = (serverScore = value).ToString();
+            ScoreMessage scoreMessage = new ScoreMessage(serverScore, clientScore, false);
+            NetworkController.Provider.GetComponent<ServerController>().SendServerMessage(scoreMessage);
         }
     }
     public int ClientScore
@@ -30,6 +32,8 @@ public class GameServerController : MonoBehaviour
         set
         {
             ClientScoreText.text = (clientScore = value).ToString();
+            ScoreMessage scoreMessage = new ScoreMessage(serverScore, clientScore, false);
+            NetworkController.Provider.GetComponent<ServerController>().SendServerMessage(scoreMessage);
         }
     }
     private int serverScore, clientScore;
@@ -42,8 +46,8 @@ public class GameServerController : MonoBehaviour
                     lastClientFirstPosition = new Vector3(-0.01f,0,0.06f), 
                     lastClientSecondPosition = new Vector3(-0.04f,0,0.06f),
 
-                    initialServerBallPositon = new Vector3(-0.022f, 0.004f, -0.07f),
-                    initialClientBallPositon = new Vector3(-0.022f, 0.004f, 0.07f);
+                    initialServerBallPosition = new Vector3(-0.022f, 0.004f, -0.07f),
+                    initialClientBallPosition = new Vector3(-0.022f, 0.004f, 0.07f);
 
     private bool isNewBarrier = true;
     private bool isScoreSent = true;
@@ -57,8 +61,8 @@ public class GameServerController : MonoBehaviour
         clientBallTransform = transform.GetChild(1);
         serverBallController = serverBallTransform.gameObject.AddComponent<BallController>();
         clientBallController = clientBallTransform.gameObject.AddComponent<BallController>();
-        serverBallController.Direction = new Vector3(0,0,1);
-        clientBallController.Direction = new Vector3(0,0,-1);
+        serverBallController.Direction = Vector3.forward;
+        clientBallController.Direction = -Vector3.forward;
         serverBallController.Speed = clientBallController.Speed = 0.01f;
         StartCoroutine(DelayedBallsLaunch());
 
@@ -150,9 +154,20 @@ public class GameServerController : MonoBehaviour
                                     new Vector2(lastSecondPosition.x, lastSecondPosition.z), 
                                     "ClientBarrier");
     }
+    public void OnBallCollision(Transform ballTransform, string collidingObjectName)
+    {
+        if(ballTransform == serverBallTransform && collidingObjectName == "ClientWall")
+        {
+            ServerScore++;
+        }
+        if(ballTransform == clientBallTransform && collidingObjectName == "ServerWall")
+        {
+            ClientScore++;
+        }
+    }
     public void OnBarrierCollision(GameObject barrierObject, GameObject collidingObject)
     {
-
+        
     }
 
     private IEnumerator DelayedBallsLaunch()
@@ -165,13 +180,23 @@ public class GameServerController : MonoBehaviour
         {
             ServerScoreText.text = i.ToString();
             ClientScoreText.text = i.ToString();
-            ScoreMessage countdownMessage = 
-                new ScoreMessage(i, i, true);
+            ScoreMessage countdownMessage = new ScoreMessage(i, i, true);
             NetworkController.Provider.GetComponent<ServerController>().SendServerMessage(countdownMessage);
             yield return new WaitForSeconds(1);
         }
         serverBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
         clientBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
+    }
+    private void BallsRelaunch()
+    {
+        serverBallTransform.localPosition = initialServerBallPosition;
+        clientBallTransform.localPosition = initialClientBallPosition;
+        serverBallController.Direction = Vector3.forward;
+        clientBallController.Direction = -Vector3.forward;
+        serverBallController.Speed = 0.01f;
+        clientBallController.Speed = 0.01f;
+
+        StartCoroutine(DelayedBallsLaunch());
     }
     // Neutralising random clicks
     private IEnumerator DelayedBarrierRefresh()

@@ -65,6 +65,7 @@ public class ServerController : MonoBehaviour
                 }
                 else
                 {
+                    isInitialized = false;
                     NetworkController.Provider = null;
                     Destroy(gameObject);
                     NetworkTransport.Shutdown();

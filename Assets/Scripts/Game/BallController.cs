@@ -33,6 +33,11 @@ public class BallController : MonoBehaviour
     // Scaling before playing for personal convenience
     private void OnCollisionEnter(Collision col)
     {
+        if(NetworkController.IsServer)
+        {
+            transform.GetComponentInParent<GameServerController>().OnBallCollision(transform, col.gameObject.name);
+        }
+
         // Simple bouncing
         collisionNormal = transform.InverseTransformDirection(col.contacts[0].normal);
         collisionNormal.y = 0;

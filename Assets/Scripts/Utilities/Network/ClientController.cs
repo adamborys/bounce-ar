@@ -57,6 +57,7 @@ public class ClientController : MonoBehaviour
                 ClientNetworkController.IsConnected = true;
                 break;
             case NetworkEventType.DisconnectEvent:
+                isInitialized = false;
                 NetworkController.Provider = null;
                 Destroy(gameObject);
                 NetworkTransport.Shutdown();

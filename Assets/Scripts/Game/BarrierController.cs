@@ -6,9 +6,6 @@ public class BarrierController : MonoBehaviour
 {
     private void OnCollisionEnter(Collision col)
     {
-        if(NetworkController.IsServer)
-        {
-            transform.GetComponentInParent<GameServerController>().OnBarrierCollision(gameObject, col.gameObject);
-        }
+        transform.GetComponentInParent<GameServerController>().OnBarrierCollision(gameObject, col.gameObject);
     }
 }
