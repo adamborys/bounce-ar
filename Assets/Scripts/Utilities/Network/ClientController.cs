@@ -88,10 +88,24 @@ public class ClientController : MonoBehaviour
                 }
                 else if(ArenaController.IsReady)
                 {
-                    object message;
-                    if((message = formatter.Deserialize(stream)) is ServerMessage)
+                    object message = formatter.Deserialize(stream);
+                    if(message is ServerMessage)
                     {
                         GameController.RefreshArena(message as ServerMessage);
+                    }
+                    else if(message is ScoreMessage)
+                    {
+                        ScoreMessage scoreMessage = (message as ScoreMessage);
+                        GameClientController.ServerScoreText.text = scoreMessage.ServerScore.ToString();
+                        GameClientController.ClientScoreText.text = scoreMessage.ClientScore.ToString();
+                        if(scoreMessage.IsCountdown)
+                        {
+                            
+                        }
+                        else //InGame score message
+                        {
+
+                        }
                     }
                 }
                 break;

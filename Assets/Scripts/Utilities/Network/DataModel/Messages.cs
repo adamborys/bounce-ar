@@ -76,14 +76,17 @@ namespace Messages
     public class ScoreMessage
     {
         private int serverScore, clientScore;
+        private bool isCountdown;
 
-        public ScoreMessage(int serverScore, int clientScore)
+        public ScoreMessage(int serverScore, int clientScore, bool isCountdown)
         {
             this.serverScore = serverScore;
             this.clientScore = clientScore;
+            this.isCountdown = isCountdown;
         }
 
-        public float ServerScore { get => serverScore; }
-        public float ClientScore { get => clientScore; }
+        public int ServerScore { get => serverScore; }
+        public int ClientScore { get => clientScore; }
+        public bool IsCountdown { get => isCountdown; }
     }
 }

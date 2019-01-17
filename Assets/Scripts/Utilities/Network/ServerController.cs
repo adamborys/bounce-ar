@@ -30,7 +30,7 @@ public class ServerController : MonoBehaviour
             UpdateClientMessage();
     }
 
-    public void SendServerMessage(ServerMessage message)
+    public void SendServerMessage(object message)
     {
         byte[] buffer = new byte[MessageInfo.BYTE_SIZE];
         

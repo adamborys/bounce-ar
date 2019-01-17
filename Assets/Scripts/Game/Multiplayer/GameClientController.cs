@@ -5,9 +5,11 @@ using Messages;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class GameClientController : MonoBehaviour
 {
+    public static Text ServerScoreText, ClientScoreText;
     private Transform serverBallTransform, clientBallTransform;
     private GameObject serverBarrier, clientBarrier;
     private Vector3 firstPosition, secondPosition, 
@@ -21,6 +23,11 @@ public class GameClientController : MonoBehaviour
     {
         serverBallTransform = transform.GetChild(0);
         clientBallTransform = transform.GetChild(1);
+
+        Transform canvasTransform = transform.GetChild(6);
+        Text[] textComponents = canvasTransform.GetComponentsInChildren<Text>();
+        ServerScoreText = textComponents[0];
+        ClientScoreText = textComponents[1];
     }
     // Maintaining game imput
     void Update()
@@ -62,6 +69,7 @@ public class GameClientController : MonoBehaviour
             }
         }
     }
+    // Used for network communication
     void FixedUpdate()
     {
         if(ArenaController.IsReady && ArenaController.IsOpponentReady)

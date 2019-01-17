@@ -16,22 +16,23 @@ public class ArenaController : MonoBehaviour
         }
         set
         {
-            Destroy(GameObject.Find("NotReadyCanvas"));
+            GameObject.Find("InGameCanvas").SetActive(false);
             isOpponentReady = value;
         }
     }
     private static bool isOpponentReady;
-    public Slider scaleSlider;
-    public Button readyButton;
+    public Slider ScaleSlider;
+    public Button ReadyButton;
 	Vector3 initialScale;
+	Vector3 clientRotation = new Vector3(0, 180, 0);
     
     void Start()
     {
-        scaleSlider.onValueChanged.AddListener(delegate { ScaleValueChanged(); });
-        readyButton.onClick.AddListener(delegate { ReadyClick(); });
+        ScaleSlider.onValueChanged.AddListener(delegate { ScaleValueChanged(); });
+        ReadyButton.onClick.AddListener(delegate { ReadyClick(); });
 
         initialScale = new Vector3(5f, 5f, 5f);
-        scaleSlider.value = 0;
+        ScaleSlider.value = 0;
         transform.localScale = initialScale;
     }
     // Manipulating Arena transform due to non-parenting it to UserTarget
@@ -39,12 +40,14 @@ public class ArenaController : MonoBehaviour
     {
         transform.position = UserTargetController.UserTargetTransform.position;
         transform.rotation = UserTargetController.UserTargetTransform.rotation;
+        if(!NetworkController.IsServer)
+            transform.Rotate(clientRotation);
     }
 
     // Scaling before playing for personal convenience
     private void ScaleValueChanged()
     {
-		float scale = Mathf.Pow(scaleSlider.value + 1f, 2);
+		float scale = Mathf.Pow(ScaleSlider.value + 1f, 2);
         transform.localScale = scale * initialScale;
     }
     // Destroying UI after Readiness reported
@@ -63,5 +66,11 @@ public class ArenaController : MonoBehaviour
             StartCoroutine(NetworkController.Provider
                                             .GetComponent<ClientController>().ReadinessTransmitter);
         }
+    }
+
+    private void AnnounceWinner(string winner)
+    {
+        GameObject.Find("InGameCanvas").SetActive(true);
+        GameObject.Find("InGameCanvas").GetComponentInChildren<Text>().text = winner + " won the game!";
     }
 }

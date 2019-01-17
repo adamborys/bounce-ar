@@ -5,22 +5,52 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Messages;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class GameServerController : MonoBehaviour
 {
+    public Text ServerScoreText, ClientScoreText;
+    public int ServerScore
+    {
+        get 
+        { 
+            return serverScore; 
+        }
+        set
+        {
+            ServerScoreText.text = (serverScore = value).ToString();
+        }
+    }
+    public int ClientScore
+    {
+        get 
+        { 
+            return clientScore; 
+        }
+        set
+        {
+            ClientScoreText.text = (clientScore = value).ToString();
+        }
+    }
+    private int serverScore, clientScore;
     private Transform serverBallTransform, clientBallTransform;
-    private BallController serverBallController, clientBallController;
     private GameObject serverBarrier, clientBarrier;
+    private BallController serverBallController, clientBallController;
     private Vector3 firstPosition, secondPosition, 
                     lastFirstPosition = new Vector3(0.01f,0,-0.06f), 
                     lastSecondPosition = new Vector3(0.04f,0,-0.06f),
                     lastClientFirstPosition = new Vector3(-0.01f,0,0.06f), 
-                    lastClientSecondPosition = new Vector3(-0.04f,0,0.06f);
+                    lastClientSecondPosition = new Vector3(-0.04f,0,0.06f),
+
+                    initialServerBallPositon = new Vector3(-0.022f, 0.004f, -0.07f),
+                    initialClientBallPositon = new Vector3(-0.022f, 0.004f, 0.07f);
+
     private bool isNewBarrier = true;
+    private bool isScoreSent = true;
 
     // Iterator for reducing network overload
     private byte networkIterator = 0;
-    
+
     void Start()
     {
         serverBallTransform = transform.GetChild(0);
@@ -31,6 +61,11 @@ public class GameServerController : MonoBehaviour
         clientBallController.Direction = new Vector3(0,0,-1);
         serverBallController.Speed = clientBallController.Speed = 0.01f;
         StartCoroutine(DelayedBallsLaunch());
+
+        Transform canvasTransform = transform.GetChild(6);
+        Text[] textComponents = canvasTransform.GetComponentsInChildren<Text>();
+        ServerScoreText = textComponents[0];
+        ClientScoreText = textComponents[1];
     }
     // Maintaining game imput
     void Update()
@@ -73,12 +108,16 @@ public class GameServerController : MonoBehaviour
             }
         }
     }
+    // Used for network communication
     void FixedUpdate()
     {
         if(ArenaController.IsReady && ArenaController.IsOpponentReady)
         {
-            // Collision info processing (game logic)
-            
+            if(!isScoreSent)
+            {
+
+                isScoreSent = true;
+            }
 
             // Sending server user input info
             if(networkIterator == 0)
@@ -111,12 +150,25 @@ public class GameServerController : MonoBehaviour
                                     new Vector2(lastSecondPosition.x, lastSecondPosition.z), 
                                     "ClientBarrier");
     }
+    public void OnBarrierCollision(GameObject barrierObject, GameObject collidingObject)
+    {
+
+    }
 
     private IEnumerator DelayedBallsLaunch()
     {
         while(!(ArenaController.IsReady && ArenaController.IsOpponentReady))
         {
             yield return null;
+        }
+        for(int i = 3; i >= 0; i--)
+        {
+            ServerScoreText.text = i.ToString();
+            ClientScoreText.text = i.ToString();
+            ScoreMessage countdownMessage = 
+                new ScoreMessage(i, i, true);
+            NetworkController.Provider.GetComponent<ServerController>().SendServerMessage(countdownMessage);
+            yield return new WaitForSeconds(1);
         }
         serverBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
         clientBallTransform.gameObject.GetComponent<BallController>().LaunchBall();
@@ -136,6 +188,7 @@ public class GameServerController : MonoBehaviour
         Vector3 midpoint = (secondPosition3D - firstPosition3D) / 2 + firstPosition3D;
 
         GameObject barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        barrier.AddComponent<BarrierController>();
         barrier.transform.SetParent(transform, false);
         barrier.name = name;
         barrier.transform.localPosition = midpoint;
