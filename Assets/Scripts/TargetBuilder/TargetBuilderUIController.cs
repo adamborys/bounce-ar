@@ -69,7 +69,7 @@ public class TargetBuilderUIController : MonoBehaviour
     // Destroying test cube, UI and preserving Network Provider
     private IEnumerator loadGameSceneAsync()
     {
-        Destroy(UserTargetController.UserTargetTransform.GetChild(0).gameObject);
+        Destroy(GameObject.Find("TestCube"));
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Game", LoadSceneMode.Additive);
 
         while(!asyncLoad.isDone)
@@ -77,9 +77,11 @@ public class TargetBuilderUIController : MonoBehaviour
             yield return null;
         }
         if(NetworkController.IsServer)
-            ServerController.GameController = GameObject.Find("Arena").AddComponent<GameServerController>();
+            ServerController.GameController = 
+                GameObject.Find("ArenaProxy").AddComponent<GameServerController>();
         else
-            ClientController.GameController = GameObject.Find("Arena").AddComponent<GameClientController>();
+            ClientController.GameController = 
+                GameObject.Find("ArenaProxy").AddComponent<GameClientController>();
         Destroy(gameObject); // Destroy TargetBuilder UI
     }
 }

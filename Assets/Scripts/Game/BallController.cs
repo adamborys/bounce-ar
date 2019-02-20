@@ -1,59 +1,42 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BallController : MonoBehaviour
 {
-	public Vector3 Direction;
-    public float Speed;
-    private bool isLaunched;
+    public static Vector2 ServerStartVelocity = new Vector2(0,10);
+    public static Vector2 ClientStartVelocity = new Vector2(0,-10);
+    public Rigidbody2D ballBody; 
+    public float speed = 10;
     private SphereCollider ballCollider;
-    private Vector3 collisionNormal;
-    private LayerMask mask;
 
-    void Start()
+    void Awake()
     {
         ballCollider = GetComponent<SphereCollider>();
+        ballBody = GetComponent<Rigidbody2D>();
     }
 
-    void FixedUpdate()
+    public void FreezeBall()
     {
-        if(isLaunched)
+        ballBody.constraints = RigidbodyConstraints2D.FreezeAll;
+    }
+
+    public void NormalizeBallVelocity()
+    {
+        ballBody.velocity = ballBody.velocity.normalized * speed;
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        //if(NetworkController.IsServer)
         {
-            transform.Translate(Direction * Speed);
+            GetComponentInParent<GameServerController>()
+                .OnBallCollision(gameObject.name, col.gameObject.name);
         }
     }
 
-    public void LaunchBall()
+    private void OnCollisionExit2D(Collision2D col)
     {
-        isLaunched = true;
-    }
-
-    // Scaling before playing for personal convenience
-    private void OnCollisionEnter(Collision col)
-    {
-        if(NetworkController.IsServer)
-        {
-            transform.GetComponentInParent<GameServerController>().OnBallCollision(transform, col.gameObject.name);
-        }
-
-        // Simple bouncing
-        collisionNormal = transform.InverseTransformDirection(col.contacts[0].normal);
-        collisionNormal.y = 0;
-        collisionNormal.Normalize();
-        Direction = Vector3.Reflect(Direction, collisionNormal);
-    }
-    
-    // Fail-safe collider interlock fix
-    public void OnCollisionStay(Collision col)
-    {
-        float depth;
-        Vector3 direction;
-        Physics.ComputePenetration(ballCollider, transform.position, transform.rotation,
-                                    col.collider, col.transform.position, col.transform.rotation,
-                                    out direction, out depth);
-        direction.y = 0;
-        transform.Translate(depth * direction * 1.415f);
+        NormalizeBallVelocity();
     }
 }

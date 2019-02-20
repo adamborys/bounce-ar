@@ -10,6 +10,8 @@ using UnityEngine.UI;
 public class GameClientController : MonoBehaviour
 {
     public static Text ServerScoreText, ClientScoreText;
+    private Transform arenaTransform;
+    private Transform arenaProxyTransform;
     private Transform serverBallTransform, clientBallTransform;
     private GameObject serverBarrier, clientBarrier;
     private Vector3 firstPosition, secondPosition, 
@@ -24,10 +26,13 @@ public class GameClientController : MonoBehaviour
         serverBallTransform = transform.GetChild(0);
         clientBallTransform = transform.GetChild(1);
 
-        Transform canvasTransform = transform.GetChild(6);
+        arenaTransform = GameObject.Find("Arena").transform;
+        Transform canvasTransform = GameObject.Find("GameCanvas").transform;
         Text[] textComponents = canvasTransform.GetComponentsInChildren<Text>();
         ServerScoreText = textComponents[0];
         ClientScoreText = textComponents[1];
+        
+        arenaProxyTransform = GameObject.Find("ArenaProxy").transform;
     }
     // Maintaining game imput
     void Update()
@@ -47,19 +52,19 @@ public class GameClientController : MonoBehaviour
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
-                LayerMask mask = LayerMask.GetMask("Default");
-                // Ignoring other layers than "Default"
+                LayerMask mask = LayerMask.GetMask("Floor");
+                // Ignoring other layers than "Floor"
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
                 {
                     if (isNewBarrier)
                     {
-                        firstPosition = transform.InverseTransformPoint(hit.point);
+                        firstPosition = arenaTransform.InverseTransformPoint(hit.point);
                         StartCoroutine(DelayedBarrierRefresh());
                     }
                     else
                     {
                         StopCoroutine(DelayedBarrierRefresh());
-                        secondPosition = transform.InverseTransformPoint(hit.point);
+                        secondPosition = arenaTransform.InverseTransformPoint(hit.point);
 
                         lastFirstPosition = firstPosition;
                         lastSecondPosition = secondPosition;
@@ -68,6 +73,11 @@ public class GameClientController : MonoBehaviour
                 }
             }
         }
+
+        CopyTransformData(arenaProxyTransform.GetChild(0), arenaTransform.GetChild(0));
+        CopyTransformData(arenaProxyTransform.GetChild(1), arenaTransform.GetChild(1));
+        CopyTransformData(arenaProxyTransform.GetChild(2), arenaTransform.GetChild(2));
+        CopyTransformData(arenaProxyTransform.GetChild(3), arenaTransform.GetChild(3));
     }
     // Used for network communication
     void FixedUpdate()
@@ -90,6 +100,7 @@ public class GameClientController : MonoBehaviour
 
     public void RefreshArena(ServerMessage serverMessage)
     {
+        /* 
         // Manipulating ball transforms according to server message
         serverBallTransform.localPosition = new Vector3(serverMessage.ServerBallX, 0.004f, serverMessage.ServerBallY);
         clientBallTransform.localPosition = new Vector3(serverMessage.ClientBallX, 0.004f, serverMessage.ClientBallY);
@@ -103,17 +114,25 @@ public class GameClientController : MonoBehaviour
         clientBarrier = BuildBarrier(new Vector2(serverMessage.ClientFirstX, serverMessage.ClientFirstY), 
                                     new Vector2(serverMessage.ClientSecondX, serverMessage.ClientSecondY), 
                                     "ClientBarrier");
+        */
     }
 
+    private void CopyTransformData(Transform from, Transform to)
+    {
+        to.position = new Vector3(from.position.x, 0.5f, from.position.y);
+    }
+   
     // Neutralising random clicks
     private IEnumerator DelayedBarrierRefresh()
     {
         yield return new WaitForSeconds(1);
         isNewBarrier = true;
     }
-    // Building barrier from two touch/mouse coordinates
-    private GameObject BuildBarrier(Vector2 firstPosition2D, Vector2 secondPosition2D, string name)
+
+    // Moving barrier according to two touch/mouse coordinates
+    private void MoveBarrier(Vector2 firstPosition, Vector2 secondPosition, string name)
     {
+        /*
         Vector3 firstPosition3D = new Vector3(firstPosition2D.x, 0.0035f, firstPosition2D.y);
         Vector3 secondPosition3D = new Vector3(secondPosition2D.x, 0.0035f, secondPosition2D.y);
         
@@ -128,5 +147,6 @@ public class GameClientController : MonoBehaviour
             new Vector3(0.0002f, 0.005f, Mathf.Clamp(barrierLength, 0.005f, 0.03f));
         barrier.transform.LookAt(transform.TransformPoint(secondPosition3D), transform.up);
         return barrier;
+        */
     }
 }

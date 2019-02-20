@@ -20,7 +20,7 @@ public class ClientController : MonoBehaviour
 
     void Start()
     {
-        init();
+        Init();
         ReadinessTransmitter = TransmitClientReadyMessage();
     }
     void FixedUpdate()
@@ -99,19 +99,25 @@ public class ClientController : MonoBehaviour
                         ScoreMessage scoreMessage = (message as ScoreMessage);
                         GameClientController.ServerScoreText.text = scoreMessage.ServerScore.ToString();
                         GameClientController.ClientScoreText.text = scoreMessage.ClientScore.ToString();
-                        if(scoreMessage.IsCountdown)
+                        if(!scoreMessage.IsCountdown)
                         {
-                            
-                        }
-                        else //InGame score message
-                        {
-
+                            if(scoreMessage.ServerScore > 2)
+                            {
+                                GameClientController.ServerScoreText.text = "Win";
+                                GameClientController.ClientScoreText.text = "Loss";
+                                StartCoroutine(RestartGame());
+                            }
+                            else if(scoreMessage.ClientScore > 2)
+                            {
+                                GameClientController.ClientScoreText.text = "Win";
+                                GameClientController.ServerScoreText.text = "Loss";
+                                StartCoroutine(RestartGame());
+                            }
                         }
                     }
                 }
                 break;
             default:
-                // Wróć do sceny NetworkMenu jeśli w grze
                 ClientNetworkController.Log.text = "Network Event system error";
                 break;
         }
@@ -132,7 +138,7 @@ public class ClientController : MonoBehaviour
         }
     }
 
-    private void init()
+    private void Init()
     {
         NetworkTransport.Init();
         ConnectionConfig config = new ConnectionConfig();
@@ -142,5 +148,12 @@ public class ClientController : MonoBehaviour
 
         NetworkTransport.Connect(hostId, ClientNetworkController.IPAddress, ClientNetworkController.Port, 0, out receiveError);
         isInitialized = true;
+    }
+    
+    private IEnumerator RestartGame()
+    {
+        yield return new WaitForSeconds(3);
+        Destroy(NetworkController.Provider);
+        SceneManager.LoadScene("NetworkMenu", LoadSceneMode.Single);
     }
 }

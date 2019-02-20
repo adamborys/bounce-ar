@@ -118,7 +118,7 @@ public class NetworkController : MonoBehaviour
                     ServerInit();
                     Log.text = "Awaiting client connection";
                 }
-                else
+                else /* if (ClientToggle.isOn) */
                 {
                     Regex regex = new Regex(ipPattern);
                     if (regex.IsMatch(IPInput.text))

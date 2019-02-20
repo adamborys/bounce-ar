@@ -21,7 +21,7 @@ public class ServerController : MonoBehaviour
 
     void Start()
     {
-        init();
+        Init();
         ReadinessTransmitter = TransmitServerReadyMessage();
     }
     void FixedUpdate()
@@ -99,7 +99,6 @@ public class ServerController : MonoBehaviour
                 }
                 break;
             default:
-                // Wróć do sceny NetworkMenu jeśli w grze
                 ServerNetworkController.Log.text = "Network Event System error";
                 break;
         }
@@ -120,7 +119,7 @@ public class ServerController : MonoBehaviour
         }
     }
 
-    private void init()
+    private void Init()
     {
         NetworkTransport.Init();
         ConnectionConfig config = new ConnectionConfig();
