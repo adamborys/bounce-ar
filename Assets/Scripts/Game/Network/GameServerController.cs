@@ -122,6 +122,18 @@ public class GameServerController : MonoBehaviour
                             firstPosition = temp;
                         }
 
+                        firstPosition = new Vector3(
+                            Mathf.Clamp(firstPosition.x, -4.4f, 4.4f),
+                            0,
+                            Mathf.Clamp(firstPosition.z, -7.9f, 7.9f)
+                        );
+
+                        secondPosition = new Vector3(
+                            Mathf.Clamp(secondPosition.x, -4.4f, 4.4f),
+                            0,
+                            Mathf.Clamp(secondPosition.z, -7.9f, 7.9f)
+                        );
+
                         Vector3 vectorBetween = secondPosition - firstPosition;
                         Vector3 newForward = Vector3.Cross(vectorBetween, Vector3.up).normalized;
                         
@@ -292,17 +304,6 @@ public class GameServerController : MonoBehaviour
             {
                 barrierTransform.localScale = scaleLerp;
             }
-            
-            int contactsQuantity = barrierCollider.GetContacts(barrierContacts);
-            bool isCollided = false;
-            for(int i = 0; i < contactsQuantity; i++)
-                if(barrierContacts[i].collider.gameObject.layer == 10)
-                {
-                    isCollided = true;
-                    break;
-                }
-            if(isCollided)
-                break;
 
             yield return null;
         }
